@@ -1,4 +1,4 @@
-*.log
+﻿*.log
 .DS_Store
 .env
 .env.backup
@@ -20,8 +20,16 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app/public
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*.log
 /vendor
 _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+/database/database.sqlite
