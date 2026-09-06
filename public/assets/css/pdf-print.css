@@ -1,0 +1,64 @@
+html {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Vazirmatn", sans-serif;
+  color: #242424;
+  font-size: 0.8rem;
+  text-align: right;
+  direction: rtl;
+}
+
+.font-25 {
+  font-size: 25px;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.no-border {
+  border: 0px !important;
+}
+
+.width-33-percent {
+  width: 33% !important;
+}
+
+.bg-grey {
+  background-color: #efefef !important;
+}
+
+.very-bold {
+  font-weight: 800;
+}
+
+.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+.float-left {
+  float: left;
+}
+
+.barcode39 {
+  font-family: "Libre Barcode 39 Extended", cursive;
+  font-size: 40px;
+}
+
+.color-dark-blue {
+  color: #1c4ba1 !important;
+}
+
+.logo-print {
+  width: 200px;
+}
+
+.border-white {
+  border: 1px solid #fff !important;
+}

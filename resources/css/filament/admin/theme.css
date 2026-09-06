@@ -1,0 +1,16 @@
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+.fi-btn.fi-color-primary,
+.dark .fi-btn.fi-color-primary {
+    background-color: #447be3 !important;
+    color: white !important;
+}
+
+.fi-btn.fi-color-primary:hover,
+.dark .fi-btn.fi-color-primary:hover {
+    background-color: #3463bc !important;
+    color: white !important;
+}
