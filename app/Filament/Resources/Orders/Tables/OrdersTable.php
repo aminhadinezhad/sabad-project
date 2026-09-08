@@ -25,15 +25,15 @@ class OrdersTable
     {
         return $table
             ->columns([
-                TextColumn::make('customer.full_name')
-                    ->label('خریدار')
+                TextColumn::make('tracking_code')
+                    ->label('کد سفارش')
+                    ->formatStateUsing(fn($state) => self::toPersianDigits($state))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('tracking_code')
-                    ->label('کد سفارش')
-                    ->formatStateUsing(fn($state) => self::toPersianDigits($state))
+                TextColumn::make('customer.full_name')
+                    ->label('خریدار')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -47,7 +47,6 @@ class OrdersTable
                 TextColumn::make('created_at')
                     ->label('تاریخ')
                     ->formatStateUsing(fn($state) => Jalalian::fromDateTime($state)->format('%Y/%m/%d'))
-                    ->sortable()
                     ->toggleable(),
 
                 IconColumn::make('is_finalized')
@@ -104,11 +103,6 @@ class OrdersTable
                     ->modalDescription('آیا برای انجام این کار مطمئن هستید؟')
                     ->modalSubmitActionLabel('حذف')
                     ->modalCancelActionLabel('لغو'),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 

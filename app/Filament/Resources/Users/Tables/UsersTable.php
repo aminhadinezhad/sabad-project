@@ -21,8 +21,7 @@ class UsersTable
             ->columns([
                 TextColumn::make('name')
                     ->label('نام ادمین')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 TextColumn::make('email')
                     ->label('پست الکترونیک')
@@ -39,7 +38,6 @@ class UsersTable
                 TextColumn::make('created_at')
                     ->label('تاریخ')
                     ->formatStateUsing(fn($state) => Jalalian::fromDateTime($state)->format('%Y/%m/%d'))
-                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([

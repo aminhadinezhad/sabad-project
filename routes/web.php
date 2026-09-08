@@ -2,10 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 
-Route::get('/', function () {
-    return view('products.index');
-})->name('products.index');
+Route::get('/', [ProductController::class, 'index'])->name('products.index');
 Route::get('/cart', function () {
     return view('cart.index');
 })->name('cart.index');

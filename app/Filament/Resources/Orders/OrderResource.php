@@ -19,7 +19,7 @@ use App\Filament\Resources\Orders\RelationManagers\ItemsRelationManager;
 class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingBag;
     protected static string|UnitEnum|null $navigationGroup = 'فروشگاه آنلاین';
     protected static ?string $modelLabel = 'سفارش';
     protected static ?string $pluralModelLabel = 'سفارش‌ ها';

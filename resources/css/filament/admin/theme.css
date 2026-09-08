@@ -14,3 +14,8 @@
     background-color: #3463bc !important;
     color: white !important;
 }
+
+.fi-btn.fi-color-primary svg,
+.dark .fi-btn.fi-color-primary svg {
+    color: white !important;
+}
