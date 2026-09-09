@@ -41,54 +41,172 @@
         .products-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-        }
-
-        .product-card {
-            background-color: var(--brand-white);
-            /* border: 1px solid #eee; */
-            border-radius: var(--radius-md);
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
             gap: 8px;
         }
 
-        .product-card__name {
-            font-size: 12px;
-            font-weight: 600;
-            color: #222;
-            margin: 0;
+        /* ===== Product card ===== */
+        .product-card {
+            background-color: var(--brand-white);
+            border-radius: var(--radius-md);
+            padding: 8px 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-card__image-wrap {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .product-card__image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 10px;
+            display: block;
+            background-color: #f6f6f6;
+        }
+
+        /* floating add / qty control, anchored to the same spot */
+       .product-card__qty {
+            position: absolute;
+            bottom: -12px;
+            right: 4px;
+        }
+
+        .product-card__add-btn {
+            /* بدون position/bottom/right */
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            border: none;
+            background-color: rgb(255, 239, 233);
+            color: rgb(255, 94, 31);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .product-card__add-btn:hover {
+            background-color: rgb(255, 94, 31);
+            color: rgb(255, 255, 255);
+        }
+
+        /* expanded state: trash/minus - qty - plus, same pattern as the cart page */
+        .qty-pill {
+            display: flex;
+            align-items: center;
+            background-color: rgb(255, 239, 233);
+            border-radius: 9px;
+        }
+
+        .qty-pill__btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgb(255, 94, 31);
+            cursor: pointer;
+        }
+
+        .qty-pill__btn.trash {
+            color: rgb(255, 94, 31);
+        }
+
+        .qty-pill__val {
+            min-width: 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+            color: rgb(255, 94, 31);
+        }
+
+        .product-card__price-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .product-card__discount-badge {
+            background-color: var(--brand-complementary);
+            color: var(--brand-white);
+            font-size: 9px;
+            font-weight: 700;
+            border-radius: 6px;
+            padding: 2px 6px;
+            white-space: nowrap;
         }
 
         .product-card__price {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--brand-primary);
-            margin: 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: #222;
+            display: flex;
+            align-items: baseline;
+            gap: 3px;
+            white-space: nowrap;
         }
 
-        .product-card__price span {
-            font-size: 10px;
+        .product-card__price-unit {
+            font-size: 9px;
             font-weight: 400;
             color: #888;
         }
 
-        .product-card__btn {
-            background-color: var(--brand-complementary);
-            color: var(--brand-white);
-            border: none;
-            border-radius: 999px;
-            padding: 7px 0;
-            font-size: 12px;
+        .product-card__old-price {
+            font-size: 10px;
+            font-weight: 400;
+            color: #aaa;
+            text-decoration: line-through;
+            margin: 0;
+        }
+
+        .product-card__weight-chip {
+            display: inline-block;
+            width: fit-content;
+            background-color: #f2f2f2;
+            color: #555;
+            font-size: 10px;
             font-weight: 600;
-            cursor: pointer;
+            border-radius: 8px;
+            padding: 4px 10px;
+        }
+
+        .product-card__name {
+            font-size: 11px;
+            font-weight: 500;
+            color: #333;
+            margin: 2px 0 0;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ===== Cart badge on bottom-nav (same look as cart page) ===== */
+        .bottom-nav__badge {
+            right: 0px;
+            top: 15px;
+            background-color: #14a0de;
+            border: 1px solid #f0f0f0;
+            color: var(--brand-white);
+            font-size: 9px;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
         }
     </style>
 
     <section class="products-section">
-
-{{-- <h2 class="products-section__title">محصولات فروشگاه</h2> --}}
 
 <div class="products-category">
     <div class="products-category__title">
@@ -102,31 +220,45 @@
     </div>
     <div class="products-grid">
         @foreach ($products->where('category', 'rice') as $product)
-            <div class="product-card" id="product-{{ $product->id }}">
+            <div class="product-card"
+                 id="product-{{ $product->id }}"
+                 data-name="{{ $product->name }}"
+                 data-price="{{ $product->price }}"
+                 data-image="{{ asset('storage/' . $product->image) }}">
 
-                @if ($product->image)
-                    <img
-                        src="{{ asset('storage/' . $product->image) }}"
-                        alt="{{ $product->name }}"
-                        style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px;"
-                    >
+                <div class="product-card__image-wrap">
+                    @if ($product->image)
+                        <img
+                            class="product-card__image"
+                            src="{{ asset('storage/' . $product->image) }}"
+                            alt="{{ $product->name }}"
+                        >
+                    @endif
+
+                    <div class="product-card__qty" data-qty-control></div>
+                </div>
+
+                <div class="product-card__price-row">
+                    @if (!empty($product->discount_percent))
+                        <span class="product-card__discount-badge">٪{{ $product->discount_percent }}</span>
+                    @endif
+                    <span class="product-card__price">
+                        {{ number_format($product->price) }}
+                        <span class="product-card__price-unit">تومان</span>
+                    </span>
+                </div>
+
+                @if (!empty($product->old_price) && $product->old_price > $product->price)
+                    <p class="product-card__old-price">{{ number_format($product->old_price) }}</p>
+                @endif
+
+                @if (!empty($product->weight))
+                    <span class="product-card__weight-chip">وزن {{ $product->weight }}</span>
                 @endif
 
                 <h3 class="product-card__name">
                     {{ $product->name }}
                 </h3>
-
-                <p class="product-card__price">
-                    {{ number_format($product->price) }}
-                    <span>تومان</span>
-                </p>
-
-                <button
-                    class="product-card__btn"
-                    onclick="addToCart('{{ $product->name }}', {{ $product->price }})"
-                >
-                    افزودن به سبد
-                </button>
             </div>
         @endforeach
     </div>
@@ -141,31 +273,45 @@
     </div>
     <div class="products-grid">
         @foreach ($products->where('category', 'legumes') as $product)
-            <div class="product-card" id="product-{{ $product->id }}">
+            <div class="product-card"
+                 id="product-{{ $product->id }}"
+                 data-name="{{ $product->name }}"
+                 data-price="{{ $product->price }}"
+                 data-image="{{ asset('storage/' . $product->image) }}">
 
-                @if ($product->image)
-                    <img
-                        src="{{ asset('storage/' . $product->image) }}"
-                        alt="{{ $product->name }}"
-                        style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px;"
-                    >
+                <div class="product-card__image-wrap">
+                    @if ($product->image)
+                        <img
+                            class="product-card__image"
+                            src="{{ asset('storage/' . $product->image) }}"
+                            alt="{{ $product->name }}"
+                        >
+                    @endif
+
+                    <div class="product-card__qty" data-qty-control></div>
+                </div>
+
+                <div class="product-card__price-row">
+                    @if (!empty($product->discount_percent))
+                        <span class="product-card__discount-badge">٪{{ $product->discount_percent }}</span>
+                    @endif
+                    <span class="product-card__price">
+                        {{ number_format($product->price) }}
+                        <span class="product-card__price-unit">تومان</span>
+                    </span>
+                </div>
+
+                @if (!empty($product->old_price) && $product->old_price > $product->price)
+                    <p class="product-card__old-price">{{ number_format($product->old_price) }}</p>
+                @endif
+
+                @if (!empty($product->weight))
+                    <span class="product-card__weight-chip">وزن {{ $product->weight }}</span>
                 @endif
 
                 <h3 class="product-card__name">
                     {{ $product->name }}
                 </h3>
-
-                <p class="product-card__price">
-                    {{ number_format($product->price) }}
-                    <span>تومان</span>
-                </p>
-
-                <button
-                    class="product-card__btn"
-                    onclick="addToCart('{{ $product->name }}', {{ $product->price }})"
-                >
-                    افزودن به سبد
-                </button>
             </div>
         @endforeach
     </div>
@@ -181,31 +327,45 @@
     </div>
     <div class="products-grid">
         @foreach ($products->where('category', 'groceries') as $product)
-            <div class="product-card" id="product-{{ $product->id }}">
+            <div class="product-card"
+                 id="product-{{ $product->id }}"
+                 data-name="{{ $product->name }}"
+                 data-price="{{ $product->price }}"
+                 data-image="{{ asset('storage/' . $product->image) }}">
 
-                @if ($product->image)
-                    <img
-                        src="{{ asset('storage/' . $product->image) }}"
-                        alt="{{ $product->name }}"
-                        style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px;"
-                    >
+                <div class="product-card__image-wrap">
+                    @if ($product->image)
+                        <img
+                            class="product-card__image"
+                            src="{{ asset('storage/' . $product->image) }}"
+                            alt="{{ $product->name }}"
+                        >
+                    @endif
+
+                    <div class="product-card__qty" data-qty-control></div>
+                </div>
+
+                <div class="product-card__price-row">
+                    @if (!empty($product->discount_percent))
+                        <span class="product-card__discount-badge">٪{{ $product->discount_percent }}</span>
+                    @endif
+                    <span class="product-card__price">
+                        {{ number_format($product->price) }}
+                        <span class="product-card__price-unit">تومان</span>
+                    </span>
+                </div>
+
+                @if (!empty($product->old_price) && $product->old_price > $product->price)
+                    <p class="product-card__old-price">{{ number_format($product->old_price) }}</p>
+                @endif
+
+                @if (!empty($product->weight))
+                    <span class="product-card__weight-chip">وزن {{ $product->weight }}</span>
                 @endif
 
                 <h3 class="product-card__name">
                     {{ $product->name }}
                 </h3>
-
-                <p class="product-card__price">
-                    {{ number_format($product->price) }}
-                    <span>تومان</span>
-                </p>
-
-                <button
-                    class="product-card__btn"
-                    onclick="addToCart('{{ $product->name }}', {{ $product->price }})"
-                >
-                    افزودن به سبد
-                </button>
             </div>
         @endforeach
     </div>
@@ -216,26 +376,134 @@
     </div> <!-- بستن mobile-viewport -->
 
     <script>
-        function addToCart(name, price) {
-            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        function getCart() {
+            return JSON.parse(localStorage.getItem('cart') || '[]');
+        }
+
+        function saveCart(cart) {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function qtyFor(name) {
+            const item = getCart().find(i => i.product_name === name);
+            return item ? item.quantity : 0;
+        }
+
+        // همون منطق صفحه سبد خرید: شمارش کل تعداد آیتم‌ها و آپدیت بج روی آیکون سبد خرید
+        function updateCartBadge() {
+            const cart = getCart();
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const el = document.getElementById('cart-count-mobile');
+            if (!el) return;
+            el.textContent = count;
+            el.classList.toggle('d-none', count === 0);
+            el.classList.toggle('d-flex', count > 0);
+        }
+
+        // kept for backward compatibility with any other caller of addToCart(name, price, image)
+        function addToCart(name, price, image) {
+            let cart = getCart();
             const existing = cart.find(item => item.product_name === name);
+
             if (existing) {
                 existing.quantity += 1;
             } else {
-                cart.push({ product_name: name, quantity: 1, unit_price: price });
-            }
-            localStorage.setItem('cart', JSON.stringify(cart));
-
-            const cartCountEl = document.getElementById('cart-count-mobile');
-            if (cartCountEl) {
-                const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-                cartCountEl.textContent = totalQuantity;
-                cartCountEl.classList.toggle('d-none', totalQuantity === 0);
-                cartCountEl.classList.toggle('d-flex', totalQuantity > 0);
+                cart.push({ product_name: name, quantity: 1, unit_price: price, image: image });
             }
 
-            alert(name + ' به سبد اضافه شد');
+            saveCart(cart);
+            refreshCardByName(name);
+            updateCartBadge();
         }
+
+        function qtyControlHTML(qty) {
+            if (qty <= 0) {
+                return `<button type="button" class="product-card__add-btn" data-action="inc">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <path d="M12 5V19M5 12H19" />
+                            </svg>
+                        </button>`;
+            }
+
+            // همون الگوی صفحه سبد خرید: دکمه پلاس اول، بعد عدد، بعد سطل/منفی
+            const leftBtn = qty === 1
+                ? `<button type="button" class="qty-pill__btn trash" data-action="remove">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19.5 5.5L18.8803 15.5251C18.7219 18.0864 18.6428 19.3671 18.0008 20.2879C17.6833 20.7431 17.2747 21.1273 16.8007 21.416C15.8421 22 14.559 22 11.9927 22C9.42312 22 8.1383 22 7.17905 21.4149C6.7048 21.1257 6.296 20.7408 5.97868 20.2848C5.33688 19.3626 5.25945 18.0801 5.10461 15.5152L4.5 5.5"></path>
+                        <path d="M3 5.5H21M16.0557 5.5L15.3731 4.09173C14.9196 3.15626 14.6928 2.68852 14.3017 2.39681C14.215 2.3321 14.1231 2.27454 14.027 2.2247C13.5939 2 13.0741 2 12.0345 2C10.9688 2 10.436 2 9.99568 2.23412C9.8981 2.28601 9.80498 2.3459 9.71729 2.41317C9.32164 2.7167 9.10063 3.20155 8.65861 4.17126L8.05292 5.5"></path>
+                        <path d="M9.5 16.5L9.5 10.5"></path>
+                        <path d="M14.5 16.5L14.5 10.5"></path>
+                     </svg>
+                   </button>`
+                : `<button type="button" class="qty-pill__btn" data-action="dec">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 12L4 12" />
+                     </svg>
+                   </button>`;
+
+            return `<div class="qty-pill">
+                        <button type="button" class="qty-pill__btn" data-action="inc">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <path d="M12 5L12 19M5 12L19 12" />
+                            </svg>
+                        </button>
+                        <span class="qty-pill__val">${qty.toLocaleString('fa-IR')}</span>
+                        ${leftBtn}
+                    </div>`;
+        }
+
+        function renderCardQty(card) {
+            const name = card.dataset.name;
+            const container = card.querySelector('[data-qty-control]');
+            container.innerHTML = qtyControlHTML(qtyFor(name));
+        }
+
+        function refreshCardByName(name) {
+            const card = document.querySelector(`.product-card[data-name="${CSS.escape(name)}"]`);
+            if (card) renderCardQty(card);
+        }
+
+        function initProductCards() {
+            document.querySelectorAll('.product-card').forEach(renderCardQty);
+            updateCartBadge();
+        }
+
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+
+            const card = btn.closest('.product-card');
+            if (!card) return;
+
+            const name = card.dataset.name;
+            const price = Number(card.dataset.price);
+            const image = card.dataset.image;
+
+            let cart = getCart();
+            const idx = cart.findIndex(i => i.product_name === name);
+
+            if (btn.dataset.action === 'inc') {
+                if (idx > -1) {
+                    cart[idx].quantity += 1;
+                } else {
+                    cart.push({ product_name: name, quantity: 1, unit_price: price, image: image });
+                }
+            } else if (btn.dataset.action === 'dec') {
+                if (idx > -1) {
+                    cart[idx].quantity = Math.max(1, cart[idx].quantity - 1);
+                }
+            } else if (btn.dataset.action === 'remove') {
+                if (idx > -1) {
+                    cart.splice(idx, 1);
+                }
+            }
+
+            saveCart(cart);
+            renderCardQty(card);
+            updateCartBadge();
+        });
+
+        initProductCards();
     </script>
 </body>
 </html>

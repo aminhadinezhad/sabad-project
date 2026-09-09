@@ -18,7 +18,17 @@
         margin: 0;
         padding: 0;
         width: 100%;
-        min-height: 100%;
+        height: 100%;
+        overflow: hidden; /* صفحه اصلی دیگه اسکرول نمی‌شه */
+    }
+
+    html {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar {
+        display: none;
     }
 
     body {
@@ -26,21 +36,33 @@
         direction: rtl;
         display: flex;
         justify-content: center;
-        min-height: 100vh;
-        min-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
-    /* ===== قاب موبایل ===== */
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
     .mobile-viewport {
         width: 100%;
-        min-height: 100vh;
-        min-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
         background-color: var(--brand-bg);
         position: relative;
         padding-bottom: 90px;
+        overflow-y: auto;   /* فقط همینجا اسکرول فعاله */
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
-    /* فقط از این عرض به بالا (دسکتاپ/تبلت)، محدود و وسط‌چین بشه */
+    .mobile-viewport::-webkit-scrollbar {
+        display: none;
+    }
+
     @media (min-width: 480px) {
         .mobile-viewport {
             max-width: var(--mobile-width);
@@ -179,7 +201,7 @@
         width: 200px;
         z-index: 200;
         border-radius: 999px;
-        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        padding: 12px 16px;
     }
 
     .bottom-nav__item {
@@ -192,16 +214,6 @@
     .bottom-nav__item--active {
         color: var(--brand-primary);
         font-weight: 700;
-    }
-    .bottom-nav__badge {
-        top: -4px;
-        left: 8px;
-        background-color: var(--brand-complementary);
-        color: var(--brand-white);
-        font-size: 9px;
-        font-weight: 700;
-        min-width: 14px;
-        height: 14px;
     }
 </style>
 
@@ -271,6 +283,9 @@
             const dotsContainer = document.getElementById('sliderDots');
             const slides = track.children;
             const totalSlides = slides.length;
+            const viewport = document.querySelector('.mobile-viewport');
+            const bottomNav = document.querySelector('.bottom-nav');
+
             let currentIndex = 0;
             let autoplayTimer = null;
 

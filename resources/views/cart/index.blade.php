@@ -1,104 +1,762 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>سبد خرید</title>
+    <link href="{{ asset('assets/bootstrap/css/bootstrap.rtl.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/fonts.css') }}" rel="stylesheet">
 </head>
-
 <body>
-    <h1>سبد خرید</h1>
 
-    <table border="1" id="cart-table">
-        <thead>
-            <tr>
-                <th>محصول</th>
-                <th>تعداد</th>
-                <th>قیمت واحد</th>
-                <th>جمع</th>
-                <th>عملیات</th>
-            </tr>
-        </thead>
-        <tbody id="cart-body"></tbody>
-    </table>
+<style>
+    :root {
+        --brand-primary: #164194;
+        --brand-primary-dark: #0f3170;
+        --brand-complementary: #f18815;
+        --brand-neutral: #c6c6c6;
+        --brand-bg: #f6f6f6;
+        --brand-white: #ffffff;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --mobile-width: 512px;
+    }
 
-    <h3>جمع کل: <span id="total-price">0</span> تومان</h3>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
 
-    <button id="checkout-btn" onclick="document.getElementById('order-modal').style.display='block'">
-        ادامه ثبت سفارش
-    </button>
+    html {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
 
-    <!-- Modal -->
-    <div id="order-modal" style="display:none; border:1px solid #000; padding:20px; margin-top:20px;">
-        <h2>تکمیل اطلاعات سفارش</h2>
+    html::-webkit-scrollbar {
+        display: none;
+    }
 
-        <form id="order-form" action="{{ route('orders.store') }}" method="POST">
-            @csrf
-            <div>
-                <label>نام و نام خانوادگی:</label>
-                <input type="text" name="full_name" required>
+    body {
+        font-family: 'Kalameh', Tahoma, sans-serif;
+        direction: rtl;
+        display: flex;
+        justify-content: center;
+        height: 100vh;
+        height: 100dvh;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
+    .mobile-viewport {
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        padding-bottom: 90px;
+        background-color: var(--brand-bg);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .mobile-viewport::-webkit-scrollbar {
+        display: none;
+    }
+
+    @media (min-width: 480px) {
+        .mobile-viewport {
+            max-width: var(--mobile-width);
+        }
+
+        .bottom-nav {
+            max-width: calc(var(--mobile-width) - 32px);
+        }
+    }
+
+    /* ===== Glass effect ===== */
+    .glass-panel {
+        background-color: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 30px rgba(22, 65, 148, 0.08);
+    }
+
+    /* ===== Logo ===== */
+    .site-header__logo img {
+        height: 60px;
+        width: auto;
+        display: block;
+    }
+
+    /* ===== Page title ===== */
+    .cart-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #222;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+
+    /* ===== Cart card (wraps all items + total) ===== */
+    .cart-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: 16px;
+    }
+
+    /* ===== Cart item row ===== */
+    .cart-item {
+        background: #fff;
+        padding: 16px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item__top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+    }
+
+    .cart-item__image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .cart-item__info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .cart-item__name {
+        margin: 0;
+        font-size: 13px;
+        color: #222;
+    }
+
+    .cart-item__price {
+        margin: 0;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--brand-primary);
+    }
+
+    .cart-item__bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .cart-item__remove {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: none;
+        border: none;
+        color: #999;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background-color: rgb(255, 239, 233);
+        color: rgb(255, 94, 31);
+        transition: 0.2s ease;
+    }
+
+    .cart-item__remove:hover {
+        background-color: rgb(255, 94, 31);
+        color: rgb(255, 255, 255);
+    }
+
+    .qty-control {
+        display: flex;
+        align-items: center;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .qty-btn {
+        background: none;
+        border: none;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .qty-btn.trash {
+        color: #dc3545;
+    }
+
+    .qty-val {
+        min-width: 28px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .cart-item__line-total {
+        font-size: 13px;
+        font-weight: 700;
+        color: #222;
+    }
+
+    /* ===== Total row (lives inside .cart-card, right under the items) ===== */
+    .total-row {
+        background-color: var(--brand-white);
+        border-top: 2px solid var(--brand-primary);
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .total-amount {
+        color: var(--brand-primary-dark);
+        font-size: 14px;
+    }
+
+    /* ===== Empty cart ===== */
+    .empty-cart {
+        text-align: center;
+        padding: 60px 20px;
+        color: #777;
+    }
+
+    .empty-cart h5 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 10px;
+    }
+
+    .empty-cart a {
+        color: var(--brand-primary);
+        text-decoration: none;
+        font-size: 12px;
+    }
+
+    /* ===== Order field (shared by inline & modal forms) ===== */
+    .order-field {
+        margin-bottom: 12px;
+    }
+
+    .label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 6px;
+    }
+
+    .label span {
+        color: #dc2626;
+    }
+
+    .order-field input,
+    .order-field textarea {
+        width: 100%;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 13px;
+        font-family: inherit;
+        background-color: var(--brand-white);
+        box-sizing: border-box;
+    }
+
+    .order-field input:focus,
+    .order-field textarea:focus {
+        outline: none;
+        border-color: var(--brand-primary);
+    }
+
+    .order-field textarea {
+        min-height: 70px;
+        resize: vertical;
+    }
+
+    /* ===== Action buttons ===== */
+    .btn-preview {
+        background: transparent;
+        color: var(--brand-primary);
+        border: 1.5px solid var(--brand-primary);
+        border-radius: 999px;
+        padding: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .btn-continue {
+        background-color: var(--brand-complementary);
+        color: var(--brand-white);
+        border: none;
+        border-radius: 999px;
+        padding: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .btn-continue:active {
+        transform: scale(0.98);
+    }
+
+    /* ===== Bottom Nav ===== */
+    .bottom-nav {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        z-index: 200;
+        border-radius: 999px;
+        padding: 12px 16px;
+    }
+
+    .bottom-nav__item {
+        color: #777;
+        font-size: 12px;
+        position: relative;
+        text-decoration: none;
+    }
+
+    .bottom-nav__item--active {
+        color: var(--brand-primary);
+        font-weight: 700;
+    }
+
+    .bottom-nav__badge {
+        right: 0px;
+        top: 15px;
+        background-color: #14a0de;
+        border: 1px solid #f0f0f0;
+        color: var(--brand-white);
+        font-size: 9px;
+        font-weight: 700;
+        min-width: 18px;
+        height: 18px;
+    }
+
+    /* =====================================================
+       Order info modal — same visual language as the
+       "افزودن آدرس" modal from the addresses page:
+       overlay + centered rounded panel, header with a
+       back/close control and a border-bottom divider,
+       scrollable body, and a full-width footer button.
+    ===================================================== */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 500;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .order-modal {
+        width: 100%;
+        max-width: 420px;
+        max-height: 88vh;
+        background: var(--brand-white);
+        border-radius: var(--radius-lg);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transform: translateY(16px) scale(0.98);
+        transition: transform 0.2s ease;
+        box-shadow: 0 20px 60px rgba(15, 49, 112, 0.25);
+    }
+
+    .modal-overlay.is-open .order-modal {
+        transform: translateY(0) scale(1);
+    }
+
+    .order-modal__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        border-bottom: 1px solid #eee;
+        flex-shrink: 0;
+    }
+
+    .order-modal__title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #222;
+        margin: 0;
+    }
+
+    .order-modal__close {
+        border: none;
+        color: #333;
+        background-color: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    .order-modal__body {
+        padding: 16px;
+        overflow-y: auto;
+    }
+
+    .order-modal__footer {
+        padding: 14px 16px;
+        border-top: 1px solid #eee;
+        flex-shrink: 0;
+    }
+</style>
+
+<div class="mobile-viewport">
+
+    <!-- لوگو -->
+    <nav class="px-3 pt-3 pb-2 d-flex justify-content-center align-items-center">
+        <a href="{{ route('products.index') }}" class="site-header__logo">
+            <img src="{{ asset('assets/images/TopLogo-01.png') }}" alt="لوگو فروشگاه">
+        </a>
+    </nav>
+
+    <div class="px-3">
+        <h1 class="cart-title mb-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 3L2.26491 3.0883C3.58495 3.52832 4.24497 3.74832 4.62248 4.2721C5 4.79587 5 5.49159 5 6.88304V9.5C5 12.3284 5 13.7426 5.87868 14.6213C6.75736 15.5 8.17157 15.5 11 15.5H19" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M7.5 18C8.32843 18 9 18.6716 9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18Z" stroke-width="1.5" />
+                <path d="M16.5 18.0001C17.3284 18.0001 18 18.6716 18 19.5001C18 20.3285 17.3284 21.0001 16.5 21.0001C15.6716 21.0001 15 20.3285 15 19.5001C15 18.6716 15.6716 18.0001 16.5 18.0001Z" stroke-width="1.5" />
+                <path d="M11 9H8" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M5 6H16.4504C18.5054 6 19.5328 6 19.9775 6.67426C20.4221 7.34853 20.0173 8.29294 19.2078 10.1818L18.7792 11.1818C18.4013 12.0636 18.2123 12.5045 17.8366 12.7523C17.4609 13 16.9812 13 16.0218 13H5" stroke-width="1.5" />
+            </svg>
+            سبد خرید
+        </h1>
+
+        <!-- سبد خالی -->
+        <div id="emptyCart" class="empty-cart" style="display:none;">
+            <img src="{{ asset('assets/images/basket.webp') }}" alt="سبد خرید خالی" style="width: 180px; margin-bottom: 10px;">
+            <h5>سبد خرید شما خالی است!</h5>
+            <a href="{{ route('products.index') }}">مشاهده محصولات
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- محتوای اصلی -->
+        <div id="mainContent" style="display:none;">
+
+            <!-- کارت واحد: آیتم‌ها + جمع کل -->
+            <div class="cart-card">
+                <div id="cartItems"></div>
+
+                <div class="total-row">
+                    <span>جمع کل</span>
+                    <span class="total-amount" id="totalAmount">۰ تومان</span>
+                </div>
             </div>
-            <div>
-                <label>شماره تلفن:</label>
-                <input type="text" name="phone" required>
-            </div>
-            <div>
-                <label>آدرس:</label>
-                <textarea name="address"></textarea>
-            </div>
 
-            <div id="hidden-items"></div>
-
-            <button type="submit">ثبت سفارش</button>
-        </form>
+            <!-- دکمه‌ای که فرم اطلاعات سفارش را در یک مودال باز می‌کند -->
+            <div class="d-flex flex-column gap-2 mb-4">
+                <button type="button" class="btn-continue" id="openOrderModalBtn">ادامه ثبت سفارش</button>
+            </div>
+        </div>
     </div>
 
-    <script>
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    <!-- نوار پایین -->
+    <nav class="bottom-nav glass-panel d-flex justify-content-around align-items-center">
+        <a href="{{ route('products.index') }}" class="bottom-nav__item d-flex flex-column align-items-center gap-1">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 12.2039C2 9.91549 2 8.77128 2.5192 7.82274C3.0384 6.87421 3.98695 6.28551 5.88403 5.10813L7.88403 3.86687C9.88939 2.62229 10.8921 2 12 2C13.1079 2 14.1106 2.62229 16.116 3.86687L18.116 5.10812C20.0131 6.28551 20.9616 6.87421 21.4808 7.82274C22 8.77128 22 9.91549 22 12.2039V13.725C22 17.6258 22 19.5763 20.8284 20.7881C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.7881C2 19.5763 2 17.6258 2 13.725V12.2039Z" stroke-width="1.5" />
+                <path d="M12 15L12 18" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <span>خانه</span>
+        </a>
 
-        function renderCart() {
-            const tbody = document.getElementById('cart-body');
-            let total = 0;
-            tbody.innerHTML = '';
-            cart.forEach((item, index) => {
-                const rowTotal = item.quantity * item.unit_price;
-                total += rowTotal;
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.product_name}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.unit_price.toLocaleString()}</td>
-                        <td>${rowTotal.toLocaleString()}</td>
-                        <td><button onclick="removeFromCart(${index})">حذف</button></td>
-                    </tr>`;
-            });
-            document.getElementById('total-price').innerText = total.toLocaleString();
+        <a href="{{ route('cart.index') }}" class="bottom-nav__item bottom-nav__item--active d-flex flex-column align-items-center gap-1 position-relative">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 3L2.26491 3.0883C3.58495 3.52832 4.24497 3.74832 4.62248 4.2721C5 4.79587 5 5.49159 5 6.88304V9.5C5 12.3284 5 13.7426 5.87868 14.6213C6.75736 15.5 8.17157 15.5 11 15.5H19" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M7.5 18C8.32843 18 9 18.6716 9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18Z" stroke-width="1.5" />
+                <path d="M16.5 18.0001C17.3284 18.0001 18 18.6716 18 19.5001C18 20.3285 17.3284 21.0001 16.5 21.0001C15.6716 21.0001 15 20.3285 15 19.5001C15 18.6716 15.6716 18.0001 16.5 18.0001Z" stroke-width="1.5" />
+                <path d="M11 9H8" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M5 6H16.4504C18.5054 6 19.5328 6 19.9775 6.67426C20.4221 7.34853 20.0173 8.29294 19.2078 10.1818L18.7792 11.1818C18.4013 12.0636 18.2123 12.5045 17.8366 12.7523C17.4609 13 16.9812 13 16.0218 13H5" stroke-width="1.5" />
+            </svg>
+            <span>سبد خرید</span>
+            <span class="bottom-nav__badge position-absolute rounded-circle d-none align-items-center justify-content-center" id="cart-count-mobile">0</span>
+        </a>
+    </nav>
+</div>
 
-            const checkoutBtn = document.getElementById('checkout-btn');
-            checkoutBtn.style.display = cart.length > 0 ? 'inline-block' : 'none';
+<!-- ===== مودال اطلاعات سفارش ===== -->
+<div class="modal-overlay" id="orderModalOverlay">
+    <div class="order-modal">
+        <div class="order-modal__header">
+            <p class="order-modal__title">اطلاعات ثبت سفارش</p>
+            <button type="button" class="order-modal__close" id="closeOrderModalBtn" aria-label="بستن">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="order-modal__body">
+            <form id="order-form" action="{{ route('orders.store') }}" method="POST">
+                @csrf
+
+                <div class="order-field">
+                    <label for="" class="label">
+                                نام و نام خانوادگی
+                                <span class="required">*</span>
+                    </label>
+                    <input type="text" name="full_name" required>
+                </div>
+
+                <div class="order-field">
+                    <label for="" class="label">
+                                شماره تلفن
+                                <span class="required">*</span>
+                    </label>
+                    <input type="text" name="phone" required>
+                </div>
+
+                <div class="order-field">
+                    <label for="" class="label">
+                                آدرس
+                        </label>
+                    <textarea name="address"></textarea>
+                </div>
+
+                <div id="hidden-items"></div>
+            </form>
+        </div>
+
+        <div class="order-modal__footer">
+            <button type="submit" form="order-form" class="btn-continue">ثبت سفارش</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function formatPrice(n) {
+        return n.toLocaleString('fa-IR');
+    }
+
+    function getCart() {
+        return JSON.parse(localStorage.getItem('cart') || '[]');
+    }
+
+    function saveCart(cart) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    function renderCart() {
+        const cart = getCart();
+        const container = document.getElementById('cartItems');
+        const emptyEl = document.getElementById('emptyCart');
+        const mainEl = document.getElementById('mainContent');
+
+        if (cart.length === 0) {
+            emptyEl.style.display = 'block';
+            mainEl.style.display = 'none';
+            updateCartBadge(0);
+            return;
         }
+
+        emptyEl.style.display = 'none';
+        mainEl.style.display = 'block';
+
+        container.innerHTML = '';
+        let total = 0;
+
+        cart.forEach((item, idx) => {
+            const lineTotal = item.unit_price * item.quantity;
+            total += lineTotal;
+
+            const leftBtn = item.quantity === 1
+                ? `<button type="button" class="qty-btn trash" onclick="removeItem(${idx})">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19.5 5.5L18.8803 15.5251C18.7219 18.0864 18.6428 19.3671 18.0008 20.2879C17.6833 20.7431 17.2747 21.1273 16.8007 21.416C15.8421 22 14.559 22 11.9927 22C9.42312 22 8.1383 22 7.17905 21.4149C6.7048 21.1257 6.296 20.7408 5.97868 20.2848C5.33688 19.3626 5.25945 18.0801 5.10461 15.5152L4.5 5.5"></path>
+                        <path d="M3 5.5H21M16.0557 5.5L15.3731 4.09173C14.9196 3.15626 14.6928 2.68852 14.3017 2.39681C14.215 2.3321 14.1231 2.27454 14.027 2.2247C13.5939 2 13.0741 2 12.0345 2C10.9688 2 10.436 2 9.99568 2.23412C9.8981 2.28601 9.80498 2.3459 9.71729 2.41317C9.32164 2.7167 9.10063 3.20155 8.65861 4.17126L8.05292 5.5"></path>
+                        <path d="M9.5 16.5L9.5 10.5"></path>
+                        <path d="M14.5 16.5L14.5 10.5"></path>
+                     </svg>
+                   </button>`
+                : `<button type="button" class="qty-btn" onclick="changeQty(${idx}, -1)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 12L4 12" />
+                     </svg>
+                   </button>`;
+            const div = document.createElement('div');
+            div.className = 'cart-item';
+            div.innerHTML = `
+            <div class="cart-item__top">
+                <img
+                    class="cart-item__image"
+                    src="${item.image || ''}"
+                    alt="${item.product_name}"
+                >
+                <div class="cart-item__info">
+                    <p class="cart-item__name">
+                        ${item.product_name}
+                    </p>
+                    <div class="cart-item__bottom">
+                        <div class="qty-control">
+                            <button type="button"
+                                    class="qty-btn"
+                                    onclick="changeQty(${idx},1)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <path d="M12 5V19M5 12H19" />
+                            </svg>
+                            </button>
+                            <span class="qty-val">
+                                ${item.quantity}
+                            </span>
+                            ${leftBtn}
+                        </div>
+                        <p class="cart-item__price">
+                            ${formatPrice(lineTotal)} تومان
+                        </p>
+                    </div>
+                </div>
+                <button type="button" class="cart-item__remove" onclick="removeItem(${idx})" aria-label="حذف محصول">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+            container.appendChild(div);
+        });
+
+        document.getElementById('totalAmount').textContent = formatPrice(total) + ' تومان';
+        updateCartBadge(cart.reduce((sum, item) => sum + item.quantity, 0));
+        fillHiddenItems(cart);
+    }
+
+    function updateCartBadge(count) {
+        const el = document.getElementById('cart-count-mobile');
+        el.textContent = count;
+        el.classList.toggle('d-none', count === 0);
+        el.classList.toggle('d-flex', count > 0);
+    }
+
+    function changeQty(idx, delta) {
+        const cart = getCart();
+        cart[idx].quantity = Math.max(1, cart[idx].quantity + delta);
+        saveCart(cart);
         renderCart();
+    }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            localStorage.setItem('cart', JSON.stringify(cart));
-            renderCart();
-            fillHiddenItems();
-        }
+    function removeItem(idx) {
+        const cart = getCart();
+        cart.splice(idx, 1);
+        saveCart(cart);
+        renderCart();
+    }
 
-        function fillHiddenItems() {
-            const container = document.getElementById('hidden-items');
-            container.innerHTML = '';
-            cart.forEach((item, index) => {
-                container.innerHTML += `
-                    <input type="hidden" name="items[${index}][product_name]" value="${item.product_name}">
-                    <input type="hidden" name="items[${index}][quantity]" value="${item.quantity}">
-                    <input type="hidden" name="items[${index}][unit_price]" value="${item.unit_price}">
-                `;
-            });
+    function fillHiddenItems(cart) {
+        const container = document.getElementById('hidden-items');
+        container.innerHTML = '';
+        cart.forEach((item, index) => {
+            container.innerHTML += `
+                <input type="hidden" name="items[${index}][product_name]" value="${item.product_name}">
+                <input type="hidden" name="items[${index}][quantity]" value="${item.quantity}">
+                <input type="hidden" name="items[${index}][unit_price]" value="${item.unit_price}">
+            `;
+        });
+    }
+
+    function submitPreview() {
+        const form = document.getElementById('order-form');
+        const originalAction = form.action;
+        const originalTarget = form.target;
+
+        form.action = "{{ route('orders.preview') }}";
+        form.target = '_blank';
+        form.submit();
+
+        form.action = originalAction;
+        form.target = originalTarget;
+    }
+
+    /* ===== مدیریت باز و بسته شدن مودال اطلاعات سفارش ===== */
+    const orderModalOverlay = document.getElementById('orderModalOverlay');
+    const openOrderModalBtn = document.getElementById('openOrderModalBtn');
+    const closeOrderModalBtn = document.getElementById('closeOrderModalBtn');
+
+    function openOrderModal() {
+        orderModalOverlay.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeOrderModal() {
+        orderModalOverlay.classList.remove('is-open');
+        document.body.style.overflow = '';
+    }
+
+    openOrderModalBtn.addEventListener('click', openOrderModal);
+    closeOrderModalBtn.addEventListener('click', closeOrderModal);
+
+    // بستن مودال با کلیک روی پس‌زمینه
+    orderModalOverlay.addEventListener('click', (e) => {
+        if (e.target === orderModalOverlay) {
+            closeOrderModal();
         }
-        fillHiddenItems();
-    </script>
+    });
+
+    // بستن مودال با کلید Esc
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && orderModalOverlay.classList.contains('is-open')) {
+            closeOrderModal();
+        }
+    });
+
+    renderCart();
+</script>
 </body>
-
 </html>
