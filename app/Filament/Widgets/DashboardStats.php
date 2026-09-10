@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\Product;
 use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -14,11 +15,11 @@ class DashboardStats extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('تعداد کالا', 0)
+            Stat::make('تعداد کالا', Product::count())
                 ->description('هنوز چیزی ثبت نشده')
                 ->descriptionIcon('heroicon-o-cube-transparent', IconPosition::Before)
                 ->color('gray')
-                ->chart([0, 0, 0]),
+                ->chart($this->getMonthlyTrend(Product::class)),
 
             Stat::make('تعداد سفارشات', Order::count())
                 ->description('روند سه ماهه ثبت سفارش')
