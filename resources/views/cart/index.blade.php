@@ -592,7 +592,7 @@
             <div class="multiplier-card">
                 <p class="multiplier-card__label">تعداد کارمندان</p>
                 <p class="multiplier-card__hint">
-                    عدد رو وارد کن تا تعداد همه‌ی کالاهای داخل سبد به همون نسبت ضرب و آپدیت بشه.
+                    لطفاً تعداد کارمندان را وارد کنید تا تعداد تمامی کالا های موجود در سبد خرید، به همان نسبت افزایش یافته و به‌روزرسانی شود.
                 </p>
                 <div class="multiplier-card__row" id="multiplierRow">
                     <input

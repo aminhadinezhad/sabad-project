@@ -306,9 +306,10 @@
         <div class="intro-modal__image">
             <img src="{{ asset('assets/images/intro-modal.webp') }}" alt="">
         </div>
-        <h2 class="intro-modal__title">سبد تامین فلات</h2>
+        <h2 class="intro-modal__title">سرویس سبد</h2>
         <p class="intro-modal__text">
-            سرویس سبد، راهی ساده برای تهیه منظم اقلام مصرفی سازمان شماست؛ کافیه اقلام مدنظرتون رو انتخاب کنید تا بر اساس تعداد پرسنل، مقدار مناسب براتون محاسبه و یک پیش‌فاکتور آماده بشه.
+            کافی است اقلام مورد نظر خود را انتخاب کنید تا مقدار مناسب آن‌ها بر اساس تعداد پرسنل محاسبه شده و پیش‌ فاکتور خرید شما آماده شود.
+
         </p>
         <button type="button" class="intro-modal__btn" id="orgBasketIntroCloseBtn">متوجه شدم</button>
     </div>
