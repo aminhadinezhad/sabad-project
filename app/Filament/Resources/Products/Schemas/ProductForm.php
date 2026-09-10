@@ -17,26 +17,26 @@ class ProductForm
     {
         return $schema
             ->components([
-                        Section::make('اطلاعات محصول')
-                            ->description('تمام فیلدهای این پنل، الزامی هستند.')
-                            ->columns(3)
-                            ->columnSpanFull()
-                            ->components([
-                                TextInput::make('name')
-                                    ->label('نام محصول')
-                                    ->required()
-                                    ->dehydrateStateUsing(fn($state) => trim($state))
-                                    ->rules([
-                                        fn($record) => function (string $attribute, $value, \Closure $fail) use ($record) {
-                                            $exists = Product::where('name', trim($value))
-                                                ->when($record, fn($q) => $q->where('id', '!=', $record->id))
-                                                ->exists();
+                Section::make('اطلاعات محصول')
+                    ->description('تمام فیلدهای این پنل، الزامی هستند.')
+                    ->columns(3)
+                    ->columnSpanFull()
+                    ->components([
+                        TextInput::make('name')
+                            ->label('نام محصول')
+                            ->required()
+                            ->dehydrateStateUsing(fn($state) => trim($state))
+                            ->rules([
+                                fn($record) => function (string $attribute, $value, \Closure $fail) use ($record) {
+                                    $exists = Product::where('name', trim($value))
+                                        ->when($record, fn($q) => $q->where('id', '!=', $record->id))
+                                        ->exists();
 
-                                            if ($exists) {
-                                                $fail('محصولی با این نام از قبل وجود دارد.');
-                                            }
-                                        },
-                                    ]),
+                                    if ($exists) {
+                                        $fail('محصولی با این نام از قبل وجود دارد.');
+                                    }
+                                },
+                            ]),
 
                         TextInput::make('code')
                             ->label('کدینگ')
@@ -63,6 +63,9 @@ class ProductForm
                             ->relationship('brand', 'name')
                             ->searchable()
                             ->preload()
+                            ->validationMessages([
+                                'required' => 'انتخاب برند/سازنده الزامی است.',
+                            ])
                             ->default(fn() => Brand::where('name', 'ساخت ایران')->first()?->id),
 
                         Select::make('unit')

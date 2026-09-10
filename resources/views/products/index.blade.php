@@ -7,6 +7,7 @@
 </head>
 <body>
     @include('partials.header')
+    @include('partials.guide-widget')
     @include('partials.services-widget')
 
     <style>
@@ -224,8 +225,9 @@
                  id="product-{{ $product->id }}"
                  data-name="{{ $product->name }}"
                  data-price="{{ $product->price }}"
-                 data-image="{{ asset('storage/' . $product->image) }}">
-
+                 data-image="{{ asset('storage/' . $product->image) }}"
+                 data-vat-percent="{{ $product->vat_enabled ? $product->vat_percentage : 0 }}">
+                 
                 <div class="product-card__image-wrap">
                     @if ($product->image)
                         <img
@@ -277,7 +279,8 @@
                  id="product-{{ $product->id }}"
                  data-name="{{ $product->name }}"
                  data-price="{{ $product->price }}"
-                 data-image="{{ asset('storage/' . $product->image) }}">
+                 data-image="{{ asset('storage/' . $product->image) }}"
+                 data-vat-percent="{{ $product->vat_enabled ? $product->vat_percentage : 0 }}">
 
                 <div class="product-card__image-wrap">
                     @if ($product->image)
@@ -331,7 +334,8 @@
                  id="product-{{ $product->id }}"
                  data-name="{{ $product->name }}"
                  data-price="{{ $product->price }}"
-                 data-image="{{ asset('storage/' . $product->image) }}">
+                 data-image="{{ asset('storage/' . $product->image) }}"
+                 data-vat-percent="{{ $product->vat_enabled ? $product->vat_percentage : 0 }}">
 
                 <div class="product-card__image-wrap">
                     @if ($product->image)
@@ -401,14 +405,14 @@
         }
 
         // kept for backward compatibility with any other caller of addToCart(name, price, image)
-        function addToCart(name, price, image) {
+        function addToCart(name, price, image, vatPercent = 0) {
             let cart = getCart();
             const existing = cart.find(item => item.product_name === name);
 
             if (existing) {
                 existing.quantity += 1;
             } else {
-                cart.push({ product_name: name, quantity: 1, unit_price: price, image: image });
+                cart.push({ product_name: name, quantity: 1, unit_price: price, image: image, vat_percent: vatPercent });
             }
 
             saveCart(cart);
@@ -478,6 +482,7 @@
             const name = card.dataset.name;
             const price = Number(card.dataset.price);
             const image = card.dataset.image;
+            const vatPercent = Number(card.dataset.vatPercent) || 0;
 
             let cart = getCart();
             const idx = cart.findIndex(i => i.product_name === name);
@@ -486,7 +491,7 @@
                 if (idx > -1) {
                     cart[idx].quantity += 1;
                 } else {
-                    cart.push({ product_name: name, quantity: 1, unit_price: price, image: image });
+                    cart.push({ product_name: name, quantity: 1, unit_price: price, image: image, vat_percent: vatPercent });
                 }
             } else if (btn.dataset.action === 'dec') {
                 if (idx > -1) {

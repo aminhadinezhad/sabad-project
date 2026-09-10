@@ -28,6 +28,7 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        touch-action: manipulation;
     }
 
     html {
@@ -189,6 +190,7 @@
         background-color: rgb(255, 239, 233);
         color: rgb(255, 94, 31);
         transition: 0.2s ease;
+        touch-action: manipulation;
     }
 
     .cart-item__remove:hover {
@@ -214,6 +216,7 @@
         justify-content: center;
         color: #333;
         cursor: pointer;
+        touch-action: manipulation;
     }
 
     .qty-btn.trash {
@@ -245,9 +248,92 @@
         font-size: 13px;
     }
 
+    .vat-row {
+        background-color: var(--brand-white);
+        padding: 0 16px 14px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--brand-complementary);
+        text-align: left;
+    }
+
     .total-amount {
         color: var(--brand-primary-dark);
         font-size: 14px;
+    }
+
+    /* ===== Employee-count multiplier card ===== */
+    .multiplier-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: var(--radius-lg);
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .multiplier-card__label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+    }
+
+    .multiplier-card__hint {
+        font-size: 11px;
+        color: #888;
+        margin: 0;
+    }
+
+    .multiplier-card__row {
+        display: flex;
+        align-items: stretch;
+        border: 1px solid #eee;
+        border-radius: 999px;
+        overflow: hidden;
+        transition: border-color 0.15s ease;
+    }
+
+    .multiplier-card__row:focus-within {
+        border-color: var(--brand-primary);
+    }
+
+    .multiplier-card__input {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        border-radius: 0;
+        padding: 10px 12px;
+        font-size: 13px;
+        font-family: inherit;
+        background-color: var(--brand-white);
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .multiplier-card__input:focus {
+        outline: none;
+    }
+
+    .btn-apply-multiplier {
+        background-color: var(--brand-primary);
+        color: var(--brand-white);
+        border: none;
+        border-radius: 0;
+        padding: 10px 18px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .multiplier-card__error {
+        margin: 0;
+        font-size: 11px;
+        color: #dc2626;
     }
 
     /* ===== Empty cart ===== */
@@ -499,6 +585,32 @@
                     <span>جمع کل</span>
                     <span class="total-amount" id="totalAmount">۰ تومان</span>
                 </div>
+                <div class="vat-row" id="vatAmount" style="display:none;"></div>
+            </div>
+
+            <!-- تعداد کارمندان: ضرب سریع تعداد همه کالاها -->
+            <div class="multiplier-card">
+                <p class="multiplier-card__label">تعداد کارمندان</p>
+                <p class="multiplier-card__hint">
+                    عدد رو وارد کن تا تعداد همه‌ی کالاهای داخل سبد به همون نسبت ضرب و آپدیت بشه.
+                </p>
+                <div class="multiplier-card__row" id="multiplierRow">
+                    <input
+                        type="number"
+                        id="employeeCountInput"
+                        class="multiplier-card__input"
+                        min="1"
+                        step="1"
+                        placeholder="مثلاً ۵۰"
+                        inputmode="numeric"
+                    >
+                    <button type="button" class="btn-apply-multiplier" id="applyMultiplierBtn">
+                        بروزرسانی سبد
+                    </button>
+                </div>
+                <p class="multiplier-card__error" id="multiplierError" style="display:none;">
+                    لطفاً یک عدد معتبر (حداقل ۱) وارد کنید.
+                </p>
             </div>
 
             <!-- دکمه‌ای که فرم اطلاعات سفارش را در یک مودال باز می‌کند -->
@@ -595,7 +707,7 @@
     }
 
     function renderCart() {
-        const cart = getCart();
+       const cart = getCart();
         const container = document.getElementById('cartItems');
         const emptyEl = document.getElementById('emptyCart');
         const mainEl = document.getElementById('mainContent');
@@ -611,11 +723,13 @@
         mainEl.style.display = 'block';
 
         container.innerHTML = '';
-        let total = 0;
+        let subtotal = 0;
+        let vatTotal = 0;
 
         cart.forEach((item, idx) => {
             const lineTotal = item.unit_price * item.quantity;
-            total += lineTotal;
+            subtotal += lineTotal;
+            vatTotal += lineTotal * (item.vat_percent || 0) / 100;
 
             const leftBtn = item.quantity === 1
                 ? `<button type="button" class="qty-btn trash" onclick="removeItem(${idx})">
@@ -673,7 +787,18 @@
             container.appendChild(div);
         });
 
-        document.getElementById('totalAmount').textContent = formatPrice(total) + ' تومان';
+        const grandTotal = subtotal + vatTotal;
+
+        document.getElementById('totalAmount').textContent = formatPrice(Math.round(grandTotal)) + ' تومان';
+
+        const vatEl = document.getElementById('vatAmount');
+        if (vatTotal > 0) {
+            vatEl.style.display = 'block';
+            vatEl.textContent = 'شامل ' + formatPrice(Math.round(vatTotal)) + ' تومان مالیات بر ارزش افزوده';
+        } else {
+            vatEl.style.display = 'none';
+        }
+
         updateCartBadge(cart.reduce((sum, item) => sum + item.quantity, 0));
         fillHiddenItems(cart);
     }
@@ -723,6 +848,57 @@
         form.action = originalAction;
         form.target = originalTarget;
     }
+
+    /* ===== تعداد کارمندان: ضرب تعداد همه‌ی آیتم‌های سبد ===== */
+    const employeeCountInput = document.getElementById('employeeCountInput');
+    const applyMultiplierBtn = document.getElementById('applyMultiplierBtn');
+    const multiplierError = document.getElementById('multiplierError');
+    const multiplierRow = document.getElementById('multiplierRow');
+
+    function showMultiplierError() {
+        multiplierError.style.display = 'block';
+        multiplierRow.classList.add('has-error');
+    }
+
+    function hideMultiplierError() {
+        multiplierError.style.display = 'none';
+        multiplierRow.classList.remove('has-error');
+    }
+
+    function applyEmployeeMultiplier() {
+        const raw = employeeCountInput.value;
+        const multiplier = parseInt(raw, 10);
+
+        if (!raw || isNaN(multiplier) || multiplier < 1) {
+            showMultiplierError();
+            employeeCountInput.focus();
+            return;
+        }
+
+        hideMultiplierError();
+
+        const cart = getCart();
+        if (cart.length === 0) return;
+
+        cart.forEach(item => {
+            item.quantity = Math.max(1, item.quantity * multiplier);
+        });
+
+        saveCart(cart);
+        renderCart();
+
+        // بعد از اعمال، فیلد رو خالی می‌کنیم تا کاربر دوباره اشتباهی چند برابر نکنه
+        employeeCountInput.value = '';
+    }
+
+    applyMultiplierBtn.addEventListener('click', applyEmployeeMultiplier);
+    employeeCountInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyEmployeeMultiplier();
+        }
+    });
+    employeeCountInput.addEventListener('input', hideMultiplierError);
 
     /* ===== مدیریت باز و بسته شدن مودال اطلاعات سفارش ===== */
     const orderModalOverlay = document.getElementById('orderModalOverlay');
