@@ -58,6 +58,7 @@
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        overflow-anchor: none; /* جلوگیری از پرش خودکار اسکرول بعد از لود صفحه (مثلاً وقتی از سبد خرید به خانه برمی‌گردیم) */
     }
 
     .mobile-viewport::-webkit-scrollbar {
@@ -306,10 +307,9 @@
         <div class="intro-modal__image">
             <img src="{{ asset('assets/images/intro-modal.webp') }}" alt="">
         </div>
-        <h2 class="intro-modal__title">سرویس سبد</h2>
+        <h2 class="intro-modal__title">به سرویس سبد خوش آمدید</h2>
         <p class="intro-modal__text">
-            کافی است اقلام مورد نظر خود را انتخاب کنید تا مقدار مناسب آن‌ها بر اساس تعداد پرسنل محاسبه شده و پیش‌ فاکتور خرید شما آماده شود.
-
+            یک سبد نمونه بسازید و تعداد کارکنان خود را وارد کنید. اقلام سبد بر اساس تعداد کارکنان شما محاسبه شده و پیش‌ فاکتور خرید شما آماده خواهد شد.
         </p>
         <button type="button" class="intro-modal__btn" id="orgBasketIntroCloseBtn">متوجه شدم</button>
     </div>

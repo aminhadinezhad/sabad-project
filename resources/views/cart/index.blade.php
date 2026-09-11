@@ -545,13 +545,13 @@
 <div class="mobile-viewport">
 
     <!-- لوگو -->
-    <nav class="px-3 pt-3 pb-2 d-flex justify-content-center align-items-center">
+    <nav class="px-3 pt-3 d-flex justify-content-center align-items-center">
         <a href="{{ route('products.index') }}" class="site-header__logo">
             <img src="{{ asset('assets/images/TopLogo-01.png') }}" alt="لوگو فروشگاه">
         </a>
     </nav>
 
-    <div class="px-3">
+    <div class="px-3 mt-4">
         <h1 class="cart-title mb-3">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2 3L2.26491 3.0883C3.58495 3.52832 4.24497 3.74832 4.62248 4.2721C5 4.79587 5 5.49159 5 6.88304V9.5C5 12.3284 5 13.7426 5.87868 14.6213C6.75736 15.5 8.17157 15.5 11 15.5H19" stroke-width="1.5" stroke-linecap="round" />
@@ -567,7 +567,7 @@
         <div id="emptyCart" class="empty-cart" style="display:none;">
             <img src="{{ asset('assets/images/basket.webp') }}" alt="سبد خرید خالی" style="width: 180px; margin-bottom: 10px;">
             <h5>سبد خرید شما خالی است!</h5>
-            <a href="{{ route('products.index') }}">مشاهده محصولات
+            <a href="{{ route('products.index') }}?scrollTo=products-section">مشاهده محصولات
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
                 </svg>

@@ -13,7 +13,8 @@
     <style>
         .products-section {
             padding: 0 16px;
-            margin-top: 24px;
+            margin-top: 16px;
+            scroll-margin-top: 16px;
         }
 
         .products-section__title {
@@ -36,7 +37,7 @@
             margin: 0;
         }
         .products-category {
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .products-grid {
@@ -207,7 +208,7 @@
         }
     </style>
 
-    <section class="products-section">
+    <section class="products-section" id="products-section">
 
 <div class="products-category">
     <div class="products-category__title">
@@ -509,6 +510,23 @@
         });
 
         initProductCards();
+
+        // اسکرول نرم به بخش محصولات وقتی از صفحه سبد خرید با لینک «مشاهده محصولات» اومدیم
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const targetId = params.get('scrollTo');
+            if (!targetId) return;
+
+            const target = document.getElementById(targetId);
+            if (!target) return;
+
+            // پاک کردن پارامتر از آدرس بدون رفرش صفحه
+            window.history.replaceState(null, '', window.location.pathname + window.location.hash);
+
+            requestAnimationFrame(() => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        })();
     </script>
 </body>
 </html>
