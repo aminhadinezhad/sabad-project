@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محصولات</title>
+    <title>سبد | خرید سازمانی تامین فلات</title>
 </head>
 <body>
     @include('partials.header')
