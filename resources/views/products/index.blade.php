@@ -225,6 +225,7 @@
             <div class="product-card"
                  id="product-{{ $product->id }}"
                  data-name="{{ $product->name }}"
+                 data-code="{{ $product->code }}"
                  data-price="{{ $product->price }}"
                  data-image="{{ asset('storage/' . $product->image) }}"
                  data-vat-percent="{{ $product->vat_enabled ? $product->vat_percentage : 0 }}">
@@ -279,6 +280,7 @@
             <div class="product-card"
                  id="product-{{ $product->id }}"
                  data-name="{{ $product->name }}"
+                 data-code="{{ $product->code }}"
                  data-price="{{ $product->price }}"
                  data-image="{{ asset('storage/' . $product->image) }}"
                  data-vat-percent="{{ $product->vat_enabled ? $product->vat_percentage : 0 }}">
@@ -334,6 +336,7 @@
             <div class="product-card"
                  id="product-{{ $product->id }}"
                  data-name="{{ $product->name }}"
+                 data-code="{{ $product->code }}"
                  data-price="{{ $product->price }}"
                  data-image="{{ asset('storage/' . $product->image) }}"
                  data-vat-percent="{{ $product->vat_enabled ? $product->vat_percentage : 0 }}">
@@ -481,6 +484,7 @@
             if (!card) return;
 
             const name = card.dataset.name;
+            const code = card.dataset.code;
             const price = Number(card.dataset.price);
             const image = card.dataset.image;
             const vatPercent = Number(card.dataset.vatPercent) || 0;
@@ -492,7 +496,7 @@
                 if (idx > -1) {
                     cart[idx].quantity += 1;
                 } else {
-                    cart.push({ product_name: name, quantity: 1, unit_price: price, image: image, vat_percent: vatPercent });
+                    cart.push({ product_name: name, product_code: code, quantity: 1, unit_price: price, image: image, vat_percent: vatPercent });
                 }
             } else if (btn.dataset.action === 'dec') {
                 if (idx > -1) {

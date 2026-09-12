@@ -20,6 +20,7 @@ class OrderController extends Controller
             'address' => 'nullable|string|max:500',
             'items' => 'required|array|min:1',
             'items.*.product_name' => 'required|string',
+            'items.*.product_code' => 'nullable|string',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.vat_amount' => 'nullable|numeric|min:0',
@@ -55,6 +56,7 @@ class OrderController extends Controller
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_name' => $item['product_name'],
+                'product_code' => $item['product_code'] ?? null,
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['unit_price'],
                 'vat_amount' => $item['vat_amount'] ?? 0,
@@ -73,6 +75,7 @@ class OrderController extends Controller
             'address' => 'nullable|string|max:500',
             'items' => 'required|array|min:1',
             'items.*.product_name' => 'required|string',
+            'items.*.product_code' => 'nullable|string',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.vat_amount' => 'nullable|numeric|min:0',
@@ -112,7 +115,7 @@ class OrderController extends Controller
     {
         $items = $order->items->map(function ($item) {
             return [
-                'product_code' => null,
+                'product_code' => $item->product_code,
                 'product_name' => $item->product_name,
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,

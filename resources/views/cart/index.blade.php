@@ -832,6 +832,7 @@
             const vatAmount = Math.round(lineTotal * (item.vat_percent || 0) / 100);
             container.innerHTML += `
                 <input type="hidden" name="items[${index}][product_name]" value="${item.product_name}">
+                <input type="hidden" name="items[${index}][product_code]" value="${item.product_code || ''}">
                 <input type="hidden" name="items[${index}][quantity]" value="${item.quantity}">
                 <input type="hidden" name="items[${index}][unit_price]" value="${item.unit_price}">
                 <input type="hidden" name="items[${index}][vat_amount]" value="${vatAmount}">
