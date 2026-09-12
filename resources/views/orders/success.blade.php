@@ -199,7 +199,7 @@
         </div>
 
         <h1 class="success-title">سفارش شما با موفقیت ثبت شد</h1>
-        <p class="success-subtitle">کارشناسان ما به‌زودی با شما تماس خواهند گرفت.</p>
+        <p class="success-subtitle">کارشناسان فروش ما به‌زودی با شما تماس خواهند گرفت.</p>
 
         <div class="tracking-box">
             <p class="label">شماره پیگیری سفارش</p>
