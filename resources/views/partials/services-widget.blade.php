@@ -22,7 +22,10 @@
      <div class="services-card">
        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 500 156.17" style="enable-background:new 0 0 500 156.17;" xml:space="preserve">
 <style type="text/css">
-	
+	.st0{fill:#154294;}
+	.st1{fill:#F18916;}
+	.st2{fill:#164194;}
+	.st3{fill:#FFFFFF;}
 </style>
 <g>
 	<rect x="-10.55" y="452.01" style="fill:none;" width="368.58" height="34.86"></rect>
