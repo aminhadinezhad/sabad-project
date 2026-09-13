@@ -199,6 +199,10 @@
         color: rgb(255, 255, 255);
     }
 
+    .cart-item__remove:hover svg {
+        stroke: rgb(255, 255, 255);
+    }
+
     .qty-control {
         display: flex;
         align-items: center;

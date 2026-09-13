@@ -99,6 +99,10 @@
             color: rgb(255, 255, 255);
         }
 
+        .product-card__add-btn:hover svg {
+            stroke: rgb(255, 255, 255);
+        }
+
         /* expanded state: trash/minus - qty - plus, same pattern as the cart page */
         .qty-pill {
             display: flex;
