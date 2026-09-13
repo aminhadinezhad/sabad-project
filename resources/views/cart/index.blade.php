@@ -414,6 +414,17 @@
         border-color: var(--brand-primary);
     }
 
+    .order-field__error {
+        margin: 6px 0 0;
+        font-size: 11px;
+        color: #dc2626;
+    }
+
+    .order-field.has-error input,
+    .order-field.has-error textarea {
+        border-color: #dc2626;
+    }
+
     .order-field textarea {
         min-height: 70px;
         resize: vertical;
@@ -619,13 +630,13 @@
                 </p>
                 <div class="multiplier-card__row" id="multiplierRow">
                     <input
-                        type="number"
+                        type="text"
                         id="employeeCountInput"
                         class="multiplier-card__input"
-                        min="1"
-                        step="1"
                         placeholder="مثلاً ۵۰"
                         inputmode="numeric"
+                        pattern="[0-9]*"
+                        autocomplete="off"
                     >
                     <button type="button" class="btn-apply-multiplier" id="applyMultiplierBtn">
                         بروزرسانی سبد
@@ -688,7 +699,8 @@
                                 نام و نام خانوادگی
                                 <span class="required">*</span>
                     </label>
-                    <input type="text" name="full_name" required>
+                    <input type="text" name="full_name" id="fullNameInput" required>
+                    <p class="order-field__error" id="fullNameError" style="display:none;"></p>
                 </div>
 
                 <div class="order-field">
@@ -696,7 +708,8 @@
                                 شماره تلفن
                                 <span class="required">*</span>
                     </label>
-                    <input type="text" name="phone" required>
+                    <input type="text" name="phone" id="phoneInput" inputmode="numeric" maxlength="11" required>
+                    <p class="order-field__error" id="phoneError" style="display:none;"></p>
                 </div>
 
                 <div class="order-field">
@@ -717,6 +730,17 @@
 </div>
 
 <script>
+    // تبدیل ارقام فارسی/عربی (کیبورد فارسی) به ارقام انگلیسی، برای اینکه اینپوت‌های عددی/تلفن درست کار کنن
+    function toEnglishDigits(str) {
+        if (!str) return str;
+        const persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        return String(str).replace(/[۰-۹٠-٩]/g, (d) => {
+            const i = persian.indexOf(d);
+            return i > -1 ? String(i) : String(arabic.indexOf(d));
+        });
+    }
+
     function formatPrice(n) {
         return n.toLocaleString('fa-IR');
     }
@@ -893,7 +917,7 @@
     }
 
     function applyEmployeeMultiplier() {
-        const raw = employeeCountInput.value;
+        const raw = toEnglishDigits(employeeCountInput.value).replace(/[^0-9]/g, '');
         const multiplier = parseInt(raw, 10);
 
         if (!raw || isNaN(multiplier) || multiplier < 1) {
@@ -925,7 +949,72 @@
             applyEmployeeMultiplier();
         }
     });
-    employeeCountInput.addEventListener('input', hideMultiplierError);
+    employeeCountInput.addEventListener('input', () => {
+        // اگه با کیبورد فارسی رقم فارسی/عربی تایپ بشه، همون لحظه به رقم انگلیسی تبدیل می‌شه
+        const cleaned = toEnglishDigits(employeeCountInput.value).replace(/[^0-9]/g, '');
+        if (cleaned !== employeeCountInput.value) {
+            employeeCountInput.value = cleaned;
+        }
+        hideMultiplierError();
+    });
+
+    /* ===== اعتبارسنجی فرم ثبت سفارش (نام، شماره تلفن) ===== */
+    const orderForm = document.getElementById('order-form');
+    const fullNameInput = document.getElementById('fullNameInput');
+    const fullNameError = document.getElementById('fullNameError');
+    const phoneInput = document.getElementById('phoneInput');
+    const phoneError = document.getElementById('phoneError');
+
+    function setFieldError(input, errorEl, message) {
+        input.closest('.order-field').classList.add('has-error');
+        errorEl.textContent = message;
+        errorEl.style.display = 'block';
+    }
+
+    function clearFieldError(input, errorEl) {
+        input.closest('.order-field').classList.remove('has-error');
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+    }
+
+    function validateFullName() {
+        if (fullNameInput.value.trim().length < 2) {
+            setFieldError(fullNameInput, fullNameError, 'نام و نام خانوادگی باید حداقل ۲ حرف باشد.');
+            return false;
+        }
+        clearFieldError(fullNameInput, fullNameError);
+        return true;
+    }
+
+    function validatePhone() {
+        // اگه با کیبورد فارسی رقم فارسی/عربی تایپ شده باشه، اول به رقم انگلیسی تبدیل می‌شه
+        const normalized = toEnglishDigits(phoneInput.value).replace(/[^0-9]/g, '');
+        if (normalized !== phoneInput.value) {
+            phoneInput.value = normalized;
+        }
+
+        if (!/^09[0-9]{9}$/.test(normalized)) {
+            setFieldError(phoneInput, phoneError, 'شماره همراه باید با 09 شروع شود و ۱۱ رقم باشد.');
+            return false;
+        }
+        clearFieldError(phoneInput, phoneError);
+        return true;
+    }
+
+    fullNameInput.addEventListener('input', () => clearFieldError(fullNameInput, fullNameError));
+    fullNameInput.addEventListener('blur', validateFullName);
+    phoneInput.addEventListener('input', () => clearFieldError(phoneInput, phoneError));
+    phoneInput.addEventListener('blur', validatePhone);
+
+    orderForm.addEventListener('submit', (e) => {
+        const isNameValid = validateFullName();
+        const isPhoneValid = validatePhone();
+
+        if (!isNameValid || !isPhoneValid) {
+            e.preventDefault();
+            (isNameValid ? phoneInput : fullNameInput).focus();
+        }
+    });
 
     /* ===== مدیریت باز و بسته شدن مودال اطلاعات سفارش ===== */
     const orderModalOverlay = document.getElementById('orderModalOverlay');

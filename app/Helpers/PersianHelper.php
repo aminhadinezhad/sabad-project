@@ -8,13 +8,33 @@ class PersianHelper
     {
         $latin = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
         $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
         return str_replace($latin, $persian, $string);
+    }
+
+    /**
+     * تبدیل ارقام فارسی و عربی (کیبورد فارسی/عربی) به ارقام انگلیسی معمولی.
+     * برای نرمالایز کردن ورودی‌های کاربر (مثل شماره تلفن) قبل از اعتبارسنجی استفاده می‌شود.
+     */
+    public static function toEnglishDigits(?string $string): ?string
+    {
+        if ($string === null) {
+            return null;
+        }
+
+        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        $arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        $latin = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+        return str_replace($arabic, $latin, str_replace($persian, $latin, $string));
     }
 
     public static function numberToPersianWords($number)
     {
         $number = (int) $number;
-        if ($number == 0) return 'صفر تومان';
+        if ($number == 0) {
+            return 'صفر تومان';
+        }
 
         $words = ['', 'یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه'];
         $tens = ['', 'ده', 'بیست', 'سی', 'چهل', 'پنجاه', 'شصت', 'هفتاد', 'هشتاد', 'نود'];
@@ -39,6 +59,7 @@ class PersianHelper
                     $result[] = $words[$num];
                 }
             }
+
             return implode(' و ', $result);
         };
 
@@ -53,10 +74,10 @@ class PersianHelper
         foreach (array_reverse($groups, true) as $index => $group) {
             if ($group > 0) {
                 $groupText = $convertGroup($group);
-                $parts[] = $groupText . ($scales[$index] ? ' ' . $scales[$index] : '');
+                $parts[] = $groupText.($scales[$index] ? ' '.$scales[$index] : '');
             }
         }
 
-        return implode(' و ', $parts) . ' تومان';
+        return implode(' و ', $parts).' تومان';
     }
 }

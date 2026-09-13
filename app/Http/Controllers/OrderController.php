@@ -14,17 +14,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         // ۱. اعتبارسنجی اطلاعات ورودی
-        $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'nullable|string|max:500',
-            'items' => 'required|array|min:1',
-            'items.*.product_name' => 'required|string',
-            'items.*.product_code' => 'nullable|string',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
-            'items.*.vat_amount' => 'nullable|numeric|min:0',
-        ]);
+        $validated = $this->validateOrderRequest($request);
 
         // ۲. پیدا کردن یا ساختن مشتری بر اساس شماره تلفن
         $customer = Customer::updateOrCreate(
@@ -69,17 +59,7 @@ class OrderController extends Controller
 
     public function preview(Request $request)
     {
-        $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'nullable|string|max:500',
-            'items' => 'required|array|min:1',
-            'items.*.product_name' => 'required|string',
-            'items.*.product_code' => 'nullable|string',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
-            'items.*.vat_amount' => 'nullable|numeric|min:0',
-        ]);
+        $validated = $this->validateOrderRequest($request);
 
         $totalPrice = collect($validated['items'])->sum(function ($item) {
             return $item['quantity'] * $item['unit_price'] + ($item['vat_amount'] ?? 0);
@@ -135,6 +115,33 @@ class OrderController extends Controller
             'totalPrice' => $order->total_price,
             'amountInWords' => PersianHelper::numberToPersianWords($order->total_price),
             'proformaUrl' => route('orders.invoice', $order),
+        ]);
+    }
+
+    /**
+     * اعتبارسنجی مشترک فرم ثبت سفارش (نام، شماره تلفن، آدرس و آیتم‌های سبد).
+     * قبل از اعتبارسنجی، ارقام فارسی/عربی شماره تلفن (در صورت تایپ با کیبورد فارسی)
+     * به ارقام انگلیسی نرمالایز می‌شوند.
+     */
+    private function validateOrderRequest(Request $request): array
+    {
+        $request->merge([
+            'phone' => PersianHelper::toEnglishDigits($request->input('phone')),
+        ]);
+
+        return $request->validate([
+            'full_name' => 'required|string|min:2|max:255',
+            'phone' => ['required', 'string', 'regex:/^09[0-9]{9}$/'],
+            'address' => 'nullable|string|max:500',
+            'items' => 'required|array|min:1',
+            'items.*.product_name' => 'required|string',
+            'items.*.product_code' => 'nullable|string',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.vat_amount' => 'nullable|numeric|min:0',
+        ], [
+            'full_name.min' => 'نام و نام خانوادگی باید حداقل ۲ حرف باشد.',
+            'phone.regex' => 'شماره همراه باید با 09 شروع شود و ۱۱ رقم باشد.',
         ]);
     }
 }
