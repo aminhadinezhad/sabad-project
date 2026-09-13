@@ -9,6 +9,7 @@ use App\Filament\Resources\Brands\Schemas\BrandForm;
 use App\Filament\Resources\Brands\Tables\BrandsTable;
 use App\Models\Brand;
 use BackedEnum;
+use Filament\Facades\Filament;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -24,7 +25,9 @@ class BrandResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'فروشگاه آنلاین';
 
     protected static ?string $modelLabel = 'سازنده/برند';
+
     protected static ?string $pluralModelLabel = 'سازنده و برند';
+
     protected static ?string $navigationLabel = 'سازنده و برند';
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -53,5 +56,15 @@ class BrandResource extends Resource
             'create' => CreateBrand::route('/create'),
             'edit' => EditBrand::route('/{record}/edit'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return Filament::auth()->user()?->can('access_brands') ?? false;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return Filament::auth()->user()?->can('access_brands') ?? false;
     }
 }

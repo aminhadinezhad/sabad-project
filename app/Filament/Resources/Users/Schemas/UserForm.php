@@ -53,10 +53,12 @@ class UserForm
                         CheckboxList::make('permissions')
                             ->label('دسترسی‌های کاربر')
                             ->relationship('permissions', 'name')
-                            ->getOptionLabelFromRecordUsing(fn($record) => match ($record->name) {
+                            ->getOptionLabelFromRecordUsing(fn ($record) => match ($record->name) {
                                 'access_customers' => 'دسترسی به مشتریان',
                                 'access_orders' => 'دسترسی به سفارش‌ها',
                                 'access_admins' => 'دسترسی به ادمین‌ها',
+                                'access_products' => 'دسترسی به کالا و محصول',
+                                'access_brands' => 'دسترسی به سازنده و برند',
                                 default => $record->name,
                             })
                             ->bulkToggleable()

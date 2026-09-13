@@ -9,6 +9,7 @@ use App\Filament\Resources\Products\Schemas\ProductForm;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Models\Product;
 use BackedEnum;
+use Filament\Facades\Filament;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -20,11 +21,17 @@ use UnitEnum;
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Cube;
+
     protected static string|UnitEnum|null $navigationGroup = 'فروشگاه آنلاین';
+
     protected static ?string $modelLabel = 'کالا';
+
     protected static ?string $pluralModelLabel = 'کالا و محصول';
+
     protected static ?string $navigationLabel = 'کالا و محصول';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
@@ -59,5 +66,15 @@ class ProductResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return Filament::auth()->user()?->can('access_products') ?? false;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return Filament::auth()->user()?->can('access_products') ?? false;
     }
 }
