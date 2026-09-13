@@ -4,6 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سبد | خرید سازمانی تامین فلات</title>
+    <link rel="icon" href="{{ asset('assets/images/Icon.ico') }}" type="image/x-icon">
+    {{-- گزارش‌گر موقت خطای جاوااسکریپت برای دیباگ مشکل نمایش آیکون‌ها روی گوشی‌های قدیمی - بعد از رفع مشکل حذف شود --}}
+    <script>
+        window.__jsErrors = [];
+        function __showDebugBanner() {
+            var el = document.getElementById('__debugBanner');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = '__debugBanner';
+                el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#b00020;color:#fff;font-size:11px;line-height:1.5;padding:8px;direction:ltr;text-align:left;white-space:pre-wrap;max-height:45vh;overflow:auto;';
+                (document.body || document.documentElement).appendChild(el);
+            }
+            el.textContent = window.__jsErrors.join('\n---\n');
+        }
+        window.addEventListener('error', function (e) {
+            window.__jsErrors.push((e.message || 'error') + ' @ ' + (e.filename || '') + ':' + (e.lineno || '') + ':' + (e.colno || ''));
+            __showDebugBanner();
+        });
+        window.addEventListener('unhandledrejection', function (e) {
+            window.__jsErrors.push('promise rejection: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+            __showDebugBanner();
+        });
+    </script>
 </head>
 <body>
     @include('partials.header')

@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>@yield('title', 'سبد پیش‌فاکتور')</title>
+    <link rel="icon" href="{{ asset('assets/images/Icon.ico') }}" type="image/x-icon">
     <link href="{{ asset('assets/bootstrap/css/bootstrap.rtl.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/pdf-print.css') }}" rel="stylesheet">
 

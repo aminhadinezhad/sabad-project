@@ -5,6 +5,13 @@
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Amin Hadinezhad",
+            "email": "mohammadaminhadinezhad@gmail.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": "^8.3",
         "barryvdh/laravel-dompdf": "^3.1",
