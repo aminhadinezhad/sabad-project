@@ -32,11 +32,12 @@ class ProductsTable
 
                 ImageColumn::make('image')
                     ->label('عکس')
-                    ->disk('public'),
+                    ->disk('public')
+                    ->defaultImageUrl(asset(Product::PLACEHOLDER_IMAGE)),
 
                 TextColumn::make('category')
                     ->label('دسته‌بندی')
-                    ->formatStateUsing(fn($state) => match ($state) {
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'rice' => 'برنج',
                         'legumes' => 'حبوبات',
                         'groceries' => 'خواربار',
@@ -48,11 +49,11 @@ class ProductsTable
 
                 TextColumn::make('price')
                     ->label('قیمت')
-                    ->formatStateUsing(fn($state) => number_format($state)),
+                    ->formatStateUsing(fn ($state) => number_format($state)),
 
                 TextColumn::make('created_at')
                     ->label('تاریخ')
-                    ->formatStateUsing(fn($state) => Jalalian::fromDateTime($state)->format('%Y/%m/%d'))
+                    ->formatStateUsing(fn ($state) => Jalalian::fromDateTime($state)->format('%Y/%m/%d'))
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersLayout(FiltersLayout::AboveContent)
@@ -61,11 +62,11 @@ class ProductsTable
                 Filter::make('name')
                     ->schema([
                         TextInput::make('name')
-                            ->label('نام محصول')
+                            ->label('نام محصول'),
                     ])
-                    ->query(fn(Builder $query, array $data) => $query->when(
+                    ->query(fn (Builder $query, array $data) => $query->when(
                         $data['name'] ?? null,
-                        fn(Builder $query, $value) => $query->where('name', 'like', "%{$value}%"),
+                        fn (Builder $query, $value) => $query->where('name', 'like', "%{$value}%"),
                     )),
 
                 SelectFilter::make('category')
@@ -87,11 +88,11 @@ class ProductsTable
                 Filter::make('code')
                     ->schema([
                         TextInput::make('code')
-                            ->label('کدینگ')
+                            ->label('کدینگ'),
                     ])
-                    ->query(fn(Builder $query, array $data) => $query->when(
+                    ->query(fn (Builder $query, array $data) => $query->when(
                         $data['code'] ?? null,
-                        fn(Builder $query, $value) => $query->where('code', $value),
+                        fn (Builder $query, $value) => $query->where('code', $value),
                     )),
             ])
             ->deferFilters()
@@ -101,7 +102,7 @@ class ProductsTable
                 Action::make('viewOnSite')
                     ->label('مشاهده در سایت')
                     ->icon('heroicon-o-eye')
-                    ->url(fn(Product $record) => 'https://sabad.taminfalat.com/#product-' . $record->id)
+                    ->url(fn (Product $record) => 'https://sabad.taminfalat.com/#product-'.$record->id)
                     ->openUrlInNewTab(),
             ]);
     }

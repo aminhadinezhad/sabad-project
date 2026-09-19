@@ -798,8 +798,9 @@
             <div class="cart-item__top">
                 <img
                     class="cart-item__image"
-                    src="${item.image || ''}"
+                    src="${item.image || '{{ asset(\App\Models\Product::PLACEHOLDER_IMAGE) }}'}"
                     alt="${item.product_name}"
+                    onerror="this.onerror=null; this.src='{{ asset(\App\Models\Product::PLACEHOLDER_IMAGE) }}';"
                 >
                 <div class="cart-item__info">
                     <p class="cart-item__name">

@@ -250,17 +250,16 @@
                  data-name="{{ $product->name }}"
                  data-code="{{ $product->code }}"
                  data-price="{{ $product->price }}"
-                 data-image="{{ asset('storage/' . $product->image) }}"
+                 data-image="{{ $product->image_url }}"
                  data-vat-percent="{{ $product->vat_enabled ? $product->vat_percentage : 0 }}">
                  
                 <div class="product-card__image-wrap">
-                    @if ($product->image)
-                        <img
-                            class="product-card__image"
-                            src="{{ asset('storage/' . $product->image) }}"
-                            alt="{{ $product->name }}"
-                        >
-                    @endif
+                    <img
+                        class="product-card__image"
+                        src="{{ $product->image_url }}"
+                        alt="{{ $product->name }}"
+                        onerror="this.onerror=null; this.src='{{ asset(\App\Models\Product::PLACEHOLDER_IMAGE) }}';"
+                    >
 
                     <div class="product-card__qty" data-qty-control></div>
                 </div>
@@ -305,17 +304,16 @@
                  data-name="{{ $product->name }}"
                  data-code="{{ $product->code }}"
                  data-price="{{ $product->price }}"
-                 data-image="{{ asset('storage/' . $product->image) }}"
+                 data-image="{{ $product->image_url }}"
                  data-vat-percent="{{ $product->vat_enabled ? $product->vat_percentage : 0 }}">
 
                 <div class="product-card__image-wrap">
-                    @if ($product->image)
-                        <img
-                            class="product-card__image"
-                            src="{{ asset('storage/' . $product->image) }}"
-                            alt="{{ $product->name }}"
-                        >
-                    @endif
+                    <img
+                        class="product-card__image"
+                        src="{{ $product->image_url }}"
+                        alt="{{ $product->name }}"
+                        onerror="this.onerror=null; this.src='{{ asset(\App\Models\Product::PLACEHOLDER_IMAGE) }}';"
+                    >
 
                     <div class="product-card__qty" data-qty-control></div>
                 </div>
@@ -361,17 +359,16 @@
                  data-name="{{ $product->name }}"
                  data-code="{{ $product->code }}"
                  data-price="{{ $product->price }}"
-                 data-image="{{ asset('storage/' . $product->image) }}"
+                 data-image="{{ $product->image_url }}"
                  data-vat-percent="{{ $product->vat_enabled ? $product->vat_percentage : 0 }}">
 
                 <div class="product-card__image-wrap">
-                    @if ($product->image)
-                        <img
-                            class="product-card__image"
-                            src="{{ asset('storage/' . $product->image) }}"
-                            alt="{{ $product->name }}"
-                        >
-                    @endif
+                    <img
+                        class="product-card__image"
+                        src="{{ $product->image_url }}"
+                        alt="{{ $product->name }}"
+                        onerror="this.onerror=null; this.src='{{ asset(\App\Models\Product::PLACEHOLDER_IMAGE) }}';"
+                    >
 
                     <div class="product-card__qty" data-qty-control></div>
                 </div>
