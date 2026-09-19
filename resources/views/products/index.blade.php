@@ -219,15 +219,15 @@
 
         /* ===== Cart badge on bottom-nav (same look as cart page) ===== */
         .bottom-nav__badge {
-            right: 0px;
-            top: 15px;
+            right: -2px;
+            top: 13px;
             background-color: #14a0de;
             border: 1px solid #f0f0f0;
             color: var(--brand-white);
             font-size: 9px;
             font-weight: 700;
-            min-width: 18px;
-            height: 18px;
+            min-width: 20px;
+            height: 20px;
         }
     </style>
 
