@@ -25,11 +25,11 @@ class ProductForm
                         TextInput::make('name')
                             ->label('نام محصول')
                             ->required()
-                            ->dehydrateStateUsing(fn($state) => trim($state))
+                            ->dehydrateStateUsing(fn ($state) => trim($state))
                             ->rules([
-                                fn($record) => function (string $attribute, $value, \Closure $fail) use ($record) {
+                                fn ($record) => function (string $attribute, $value, \Closure $fail) use ($record) {
                                     $exists = Product::where('name', trim($value))
-                                        ->when($record, fn($q) => $q->where('id', '!=', $record->id))
+                                        ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
                                         ->exists();
 
                                     if ($exists) {
@@ -46,7 +46,7 @@ class ProductForm
                             ->validationMessages([
                                 'unique' => 'کدینگ باید منحصر به فرد باشد.',
                             ])
-                            ->default(fn() => (Product::max('code') ?? 0) + 1),
+                            ->default(fn () => (Product::max('code') ?? 0) + 1),
 
                         Select::make('category')
                             ->label('دسته‌بندی')
@@ -66,7 +66,7 @@ class ProductForm
                             ->validationMessages([
                                 'required' => 'انتخاب برند/سازنده الزامی است.',
                             ])
-                            ->default(fn() => Brand::where('name', 'ساخت ایران')->first()?->id),
+                            ->default(fn () => Brand::where('name', 'ساخت ایران')->first()?->id),
 
                         Select::make('unit')
                             ->label('واحد')
@@ -83,10 +83,13 @@ class ProductForm
                                 'گالن' => 'گالن',
                             ]),
 
+                        // قیمت کالاهای موجود فقط از «روتین‌های فروشگاه آنلاین» (ایمپورت اکسل) تغییر می‌کند؛
+                        // برای کالای جدید لازم است چون ستون قیمت در دیتابیس خالی نمی‌پذیرد.
                         TextInput::make('price')
                             ->label('قیمت')
                             ->required()
-                            ->numeric(),
+                            ->numeric()
+                            ->visibleOn('create'),
 
                         Toggle::make('vat_enabled')
                             ->label('قیمت با مالیات بر ارزش افزوده باشد؟')
@@ -97,7 +100,7 @@ class ProductForm
                             ->label('درصد مالیات بر ارزش افزوده')
                             ->numeric()
                             ->suffix('%')
-                            ->visible(fn($get) => $get('vat_enabled')),
+                            ->visible(fn ($get) => $get('vat_enabled')),
                     ]),
 
                 Section::make('عکس های محصول')
