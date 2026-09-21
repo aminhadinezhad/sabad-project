@@ -23,6 +23,11 @@
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('ico/favicon-96x96.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('ico/favicon-16x16.png') }}">
     <link rel="manifest" href="{{ asset('ico/manifest.json') }}">
+    {{-- The four Kalameh weights this page uses start downloading right away instead of after the CSS,
+         so the text shows in Kalameh with the rest of the page rather than switching fonts a moment later. --}}
+    @foreach (['Regular', 'Medium', 'SemiBold', 'Bold'] as $weight)
+        <link rel="preload" href="{{ asset('fonts/kalameh/KalamehWeb(FaNum)-'.$weight.'.woff2') }}" as="font" type="font/woff2" crossorigin>
+    @endforeach
 </head>
 <body>
     @include('partials.header')
