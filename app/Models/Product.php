@@ -16,6 +16,7 @@ class Product extends Model
         'brand_id',
         'unit',
         'price',
+        'is_available',
         'image',
         'vat_enabled',
         'vat_percentage',
@@ -23,6 +24,7 @@ class Product extends Model
 
     protected $casts = [
         'vat_enabled' => 'boolean',
+        'is_available' => 'boolean',
     ];
 
     public function brand()

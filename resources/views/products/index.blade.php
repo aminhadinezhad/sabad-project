@@ -160,6 +160,18 @@
             flex-wrap: wrap;
         }
 
+        /* same idea as the main site: unavailable cards show this instead of the price and the add button */
+        .product-card__unavailable {
+            display: inline-block;
+            width: fit-content;
+            background-color: #f2f2f2;
+            color: #999;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 3px 10px;
+        }
+
         .product-card__discount-badge {
             background-color: var(--brand-complementary);
             color: var(--brand-white);
@@ -261,9 +273,12 @@
                         onerror="this.onerror=null; this.src='{{ asset(\App\Models\Product::PLACEHOLDER_IMAGE) }}';"
                     >
 
-                    <div class="product-card__qty" data-qty-control></div>
+                    @if ($product->is_available)
+                        <div class="product-card__qty" data-qty-control></div>
+                    @endif
                 </div>
 
+                @if ($product->is_available)
                 <div class="product-card__price-row">
                     @if (!empty($product->discount_percent))
                         <span class="product-card__discount-badge">٪{{ $product->discount_percent }}</span>
@@ -273,6 +288,9 @@
                         <span class="product-card__price-unit">تومان</span>
                     </span>
                 </div>
+                @else
+                    <span class="product-card__unavailable">ناموجود</span>
+                @endif
 
                 @if (!empty($product->old_price) && $product->old_price > $product->price)
                     <p class="product-card__old-price">{{ number_format($product->old_price) }}</p>
@@ -315,9 +333,12 @@
                         onerror="this.onerror=null; this.src='{{ asset(\App\Models\Product::PLACEHOLDER_IMAGE) }}';"
                     >
 
-                    <div class="product-card__qty" data-qty-control></div>
+                    @if ($product->is_available)
+                        <div class="product-card__qty" data-qty-control></div>
+                    @endif
                 </div>
 
+                @if ($product->is_available)
                 <div class="product-card__price-row">
                     @if (!empty($product->discount_percent))
                         <span class="product-card__discount-badge">٪{{ $product->discount_percent }}</span>
@@ -327,6 +348,9 @@
                         <span class="product-card__price-unit">تومان</span>
                     </span>
                 </div>
+                @else
+                    <span class="product-card__unavailable">ناموجود</span>
+                @endif
 
                 @if (!empty($product->old_price) && $product->old_price > $product->price)
                     <p class="product-card__old-price">{{ number_format($product->old_price) }}</p>
@@ -370,9 +394,12 @@
                         onerror="this.onerror=null; this.src='{{ asset(\App\Models\Product::PLACEHOLDER_IMAGE) }}';"
                     >
 
-                    <div class="product-card__qty" data-qty-control></div>
+                    @if ($product->is_available)
+                        <div class="product-card__qty" data-qty-control></div>
+                    @endif
                 </div>
 
+                @if ($product->is_available)
                 <div class="product-card__price-row">
                     @if (!empty($product->discount_percent))
                         <span class="product-card__discount-badge">٪{{ $product->discount_percent }}</span>
@@ -382,6 +409,9 @@
                         <span class="product-card__price-unit">تومان</span>
                     </span>
                 </div>
+                @else
+                    <span class="product-card__unavailable">ناموجود</span>
+                @endif
 
                 @if (!empty($product->old_price) && $product->old_price > $product->price)
                     <p class="product-card__old-price">{{ number_format($product->old_price) }}</p>
@@ -483,6 +513,7 @@
         function renderCardQty(card) {
             const name = card.dataset.name;
             const container = card.querySelector('[data-qty-control]');
+            if (!container) return; // unavailable cards have no add button
             container.innerHTML = qtyControlHTML(qtyFor(name));
         }
 

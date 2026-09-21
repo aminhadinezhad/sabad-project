@@ -91,6 +91,11 @@ class ProductForm
                             ->numeric()
                             ->visibleOn('create'),
 
+                        Toggle::make('is_available')
+                            ->label('کالا موجود است؟')
+                            ->helperText('اگر خاموش باشد، کالا در سایت «ناموجود» نمایش داده می‌شود و قابل افزودن به سبد نیست.')
+                            ->default(true),
+
                         Toggle::make('vat_enabled')
                             ->label('قیمت با مالیات بر ارزش افزوده باشد؟')
                             ->helperText('در صورت فعال بودن، مالیات بر ارزش افزوده به قیمت پایه اضافه می‌شود.')

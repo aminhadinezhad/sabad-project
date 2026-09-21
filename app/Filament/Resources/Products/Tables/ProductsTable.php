@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -50,6 +51,9 @@ class ProductsTable
                 TextColumn::make('price')
                     ->label('قیمت')
                     ->formatStateUsing(fn ($state) => number_format($state)),
+
+                ToggleColumn::make('is_available')
+                    ->label('موجود'),
 
                 TextColumn::make('created_at')
                     ->label('تاریخ')
