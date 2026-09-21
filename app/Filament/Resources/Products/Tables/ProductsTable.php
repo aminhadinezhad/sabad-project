@@ -53,7 +53,7 @@ class ProductsTable
                     ->formatStateUsing(fn ($state) => number_format($state)),
 
                 ToggleColumn::make('is_available')
-                    ->label('موجود'),
+                    ->label('موجود؟'),
 
                 TextColumn::make('created_at')
                     ->label('تاریخ')
