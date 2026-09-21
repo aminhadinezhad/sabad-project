@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
+use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
 use Filament\Facades\Filament;
@@ -51,7 +53,7 @@ class ProductAvailabilityTest extends TestCase
         $this->assertStringContainsString('120,000', $onCard);
     }
 
-    public function test_products_table_toggle_switches_availability(): void
+    public function test_availability_is_switched_from_the_edit_form_not_the_table(): void
     {
         Filament::setCurrentPanel('admin');
         Permission::create(['name' => 'access_products']);
@@ -59,10 +61,17 @@ class ProductAvailabilityTest extends TestCase
         $user->givePermissionTo('access_products');
         $this->actingAs($user);
 
-        $product = $this->product('برنج هاشمی');
+        $brand = Brand::create(['name' => 'ساخت ایران']);
+        $product = $this->product('برنج هاشمی', ['code' => 1, 'brand_id' => $brand->id, 'unit' => 'کیلوگرم']);
 
         Livewire::test(ListProducts::class)
-            ->call('updateTableColumnState', 'is_available', (string) $product->getKey(), false);
+            ->assertTableColumnDoesNotExist('is_available');
+
+        Livewire::test(EditProduct::class, ['record' => $product->getRouteKey()])
+            ->assertFormFieldVisible('is_available')
+            ->fillForm(['is_available' => false])
+            ->call('save')
+            ->assertHasNoFormErrors();
 
         $this->assertFalse($product->fresh()->is_available);
         $this->assertSame(150000, (int) $product->fresh()->price);
