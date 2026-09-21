@@ -50,7 +50,7 @@ class OnlineStoreRoutines extends Page
 
     public static function canAccess(): bool
     {
-        return Filament::auth()->user()?->can('access_products') ?? false;
+        return Filament::auth()->user()?->can('access_routines') ?? false;
     }
 
     /**

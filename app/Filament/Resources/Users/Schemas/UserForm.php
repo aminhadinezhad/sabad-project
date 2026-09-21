@@ -59,6 +59,7 @@ class UserForm
                                 'access_admins' => 'دسترسی به ادمین‌ها',
                                 'access_products' => 'دسترسی به کالا و محصول',
                                 'access_brands' => 'دسترسی به سازنده و برند',
+                                'access_routines' => 'دسترسی به روتین‌های فروشگاه آنلاین',
                                 default => $record->name,
                             })
                             ->bulkToggleable()

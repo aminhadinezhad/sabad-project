@@ -25,15 +25,15 @@ class OnlineStoreRoutinesTest extends TestCase
         parent::setUp();
 
         Filament::setCurrentPanel('admin');
-        Permission::create(['name' => 'access_products']);
+        // the access_routines permission itself comes from its migration
     }
 
-    private function admin(bool $canManageProducts = true): User
+    private function admin(bool $canUseRoutines = true): User
     {
         $user = User::factory()->create(['has_access' => true]);
 
-        if ($canManageProducts) {
-            $user->givePermissionTo('access_products');
+        if ($canUseRoutines) {
+            $user->givePermissionTo('access_routines');
         }
 
         return $user;
@@ -61,14 +61,24 @@ class OnlineStoreRoutinesTest extends TestCase
         return UploadedFile::fake()->createWithContent('prices.xlsx', file_get_contents($path));
     }
 
-    public function test_page_is_reachable_only_with_product_permission(): void
+    public function test_page_is_reachable_only_with_routines_permission(): void
     {
         $this->actingAs($this->admin())->get('/admin/routines')
             ->assertOk()
             ->assertSee('بروز رسانی قیمت کالا - بالک');
 
-        $this->actingAs($this->admin(canManageProducts: false))->get('/admin/routines')
+        $this->actingAs($this->admin(canUseRoutines: false))->get('/admin/routines')
             ->assertForbidden();
+    }
+
+    public function test_routines_permission_is_a_tickable_option_in_the_admins_form(): void
+    {
+        $admin = User::factory()->create(['has_access' => true]);
+        $admin->givePermissionTo(Permission::findOrCreate('access_admins', 'web'));
+
+        $this->actingAs($admin)->get('/admin/users/create')
+            ->assertOk()
+            ->assertSee('دسترسی به روتین‌های فروشگاه آنلاین');
     }
 
     public function test_export_lists_every_product_with_its_price(): void
