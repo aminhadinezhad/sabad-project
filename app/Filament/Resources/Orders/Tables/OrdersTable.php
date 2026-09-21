@@ -2,19 +2,16 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
-use App\Models\Customer;
 use App\Models\Order;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Morilog\Jalali\Jalalian;
@@ -27,7 +24,7 @@ class OrdersTable
             ->columns([
                 TextColumn::make('tracking_code')
                     ->label('کد سفارش')
-                    ->formatStateUsing(fn($state) => self::toPersianDigits($state))
+                    ->formatStateUsing(fn ($state) => self::toPersianDigits($state))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -40,13 +37,13 @@ class OrdersTable
 
                 TextColumn::make('total_price')
                     ->label('مبلغ')
-                    ->formatStateUsing(fn($state) => self::toPersianDigits(number_format($state)))
+                    ->formatStateUsing(fn ($state) => self::toPersianDigits(number_format($state)))
                     ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('created_at')
                     ->label('تاریخ')
-                    ->formatStateUsing(fn($state) => Jalalian::fromDateTime($state)->format('%Y/%m/%d'))
+                    ->formatStateUsing(fn ($state) => Jalalian::fromDateTime($state)->format('%Y/%m/%d'))
                     ->toggleable(),
 
                 IconColumn::make('is_finalized')
@@ -61,11 +58,11 @@ class OrdersTable
                 Filter::make('tracking_code')
                     ->schema([
                         TextInput::make('tracking_code')
-                            ->label('کد سفارش')
+                            ->label('کد سفارش'),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query->when(
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
                         $data['tracking_code'] ?? null,
-                        fn(Builder $query, $value): Builder => $query->where('tracking_code', 'like', "%{$value}%"),
+                        fn (Builder $query, $value): Builder => $query->where('tracking_code', 'like', "%{$value}%"),
                     )),
 
                 SelectFilter::make('is_finalized')
@@ -88,21 +85,21 @@ class OrdersTable
                 EditAction::make()
                     ->label('ویرایش'),
 
-                Action::make('printInvoice')
-                    ->label('چاپ پیش‌فاکتور سفارش')
-                    ->icon('heroicon-o-printer')
-                    ->url(fn(Order $record) => route('orders.invoice', $record))
-                    ->openUrlInNewTab(),
-
                 DeleteAction::make()
                     ->label('حذف')
                     ->requiresConfirmation()
                     ->modalHeading(
-                        fn(Order $record): string => "حذف {$record->tracking_code}"
+                        fn (Order $record): string => "حذف {$record->tracking_code}"
                     )
                     ->modalDescription('آیا برای انجام این کار مطمئن هستید؟')
                     ->modalSubmitActionLabel('حذف')
                     ->modalCancelActionLabel('لغو'),
+
+                Action::make('printInvoice')
+                    ->label('چاپ پیش فاکتور سفارش')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn (Order $record) => route('orders.invoice', $record))
+                    ->openUrlInNewTab(),
             ]);
     }
 
