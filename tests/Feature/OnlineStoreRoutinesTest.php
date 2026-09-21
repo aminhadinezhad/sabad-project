@@ -9,6 +9,7 @@ use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Reader\XLSX\Reader;
@@ -197,6 +198,31 @@ class OnlineStoreRoutinesTest extends TestCase
             ->assertSet('importErrors', ['هیچ‌کدام از کالاهای فایل در سبد وجود ندارند؛ فایل را دوباره از همین صفحه دانلود کنید.']);
 
         $this->assertSame(150000, (int) $rice->fresh()->price);
+    }
+
+    public function test_each_successful_import_replaces_the_saved_file(): void
+    {
+        Storage::fake('local');
+        $this->actingAs($this->admin());
+        $rice = $this->product('برنج هاشمی', 150000);
+
+        $first = $this->excel([[$rice->id, 'ندارد', 'برنج هاشمی', 160000]]);
+        $second = $this->excel([[$rice->id, 'ندارد', 'برنج هاشمی', 170000]]);
+
+        Livewire::test(OnlineStoreRoutines::class)->set('excelFile', $first)->call('importPrices');
+        Livewire::test(OnlineStoreRoutines::class)->set('excelFile', $second)->call('importPrices');
+
+        Storage::disk('local')->assertExists(OnlineStoreRoutines::LAST_IMPORT_PATH);
+        $this->assertSame([OnlineStoreRoutines::LAST_IMPORT_PATH], Storage::disk('local')->files('price-imports'));
+        $this->assertSame(file_get_contents($second->getRealPath()), Storage::disk('local')->get(OnlineStoreRoutines::LAST_IMPORT_PATH));
+
+        // A rejected file changes no price and leaves the saved file alone.
+        Livewire::test(OnlineStoreRoutines::class)
+            ->set('excelFile', $this->excel([[$rice->id, 'ندارد', 'برنج هاشمی', 'نامشخص']]))
+            ->call('importPrices');
+
+        $this->assertSame(file_get_contents($second->getRealPath()), Storage::disk('local')->get(OnlineStoreRoutines::LAST_IMPORT_PATH));
+        $this->assertSame(170000, (int) $rice->fresh()->price);
     }
 
     public function test_import_requires_an_xlsx_file(): void

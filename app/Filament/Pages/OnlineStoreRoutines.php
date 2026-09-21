@@ -10,6 +10,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Reader\XLSX\Reader;
@@ -28,6 +29,9 @@ class OnlineStoreRoutines extends Page
     use WithFileUploads;
 
     public const HEADINGS = ['کد یونیک محصول', 'کدینگ محصول', 'نام محصول', 'قیمت (تومان)'];
+
+    /** آخرین فایل ایمپورت‌شده روی دیسک local (storage/app/private)؛ هر ایمپورت موفق روی قبلی نوشته می‌شود. */
+    public const LAST_IMPORT_PATH = 'price-imports/last-prices.xlsx';
 
     private const MAX_REPORTED_ERRORS = 10;
 
@@ -140,6 +144,12 @@ class OnlineStoreRoutines extends Page
 
             return $changed;
         });
+
+        Storage::disk('local')->putFileAs(
+            dirname(self::LAST_IMPORT_PATH),
+            $this->excelFile,
+            basename(self::LAST_IMPORT_PATH),
+        );
 
         $this->reset('excelFile');
 
