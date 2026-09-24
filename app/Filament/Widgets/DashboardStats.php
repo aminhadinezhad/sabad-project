@@ -14,9 +14,11 @@ class DashboardStats extends BaseWidget
 {
     protected function getStats(): array
     {
+        $products = Product::count();
+
         return [
-            Stat::make('تعداد کالا', Product::count())
-                ->description('هنوز چیزی ثبت نشده')
+            Stat::make('تعداد کالا', $products)
+                ->description($products > 0 ? 'کالاهای جدید ثبت شده در سیستم' : 'هنوز چیزی ثبت نشده')
                 ->descriptionIcon('heroicon-o-cube-transparent', IconPosition::Before)
                 ->color('gray')
                 ->chart($this->getMonthlyTrend(Product::class)),

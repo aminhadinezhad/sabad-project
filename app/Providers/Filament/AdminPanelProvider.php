@@ -34,7 +34,8 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
             ->font('Kalameh', url: asset('css/fonts.css'), provider: LocalFontProvider::class)
-            ->brandName('تامین فلات')
+            // sabad is a Tamin Falat service, so it is named as one (login page, panel header, tab title)
+            ->brandName('سبد تامین فلات')
             ->favicon(asset('ico/favicon-32x32.png'))
             ->navigationGroups([
                 'فروشگاه آنلاین',
