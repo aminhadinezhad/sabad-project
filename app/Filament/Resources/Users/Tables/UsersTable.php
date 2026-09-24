@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Support\PersianDate;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -11,7 +12,6 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
-use Morilog\Jalali\Jalalian;
 
 class UsersTable
 {
@@ -37,7 +37,7 @@ class UsersTable
 
                 TextColumn::make('created_at')
                     ->label('تاریخ')
-                    ->formatStateUsing(fn($state) => Jalalian::fromDateTime($state)->format('%Y/%m/%d'))
+                    ->formatStateUsing(fn ($state) => PersianDate::date($state))
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([

@@ -6,8 +6,8 @@ use App\Helpers\PersianHelper;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Support\PersianDate;
 use Illuminate\Http\Request;
-use Morilog\Jalali\Jalalian;
 
 class OrderController extends Controller
 {
@@ -77,7 +77,7 @@ class OrderController extends Controller
             'items' => $items,
             'totalPrice' => $totalPrice,
             'trackingCode' => null,
-            'orderDate' => Jalalian::now(new \DateTimeZone('Asia/Tehran'))->format('l، Y/m/d H:i'),
+            'orderDate' => PersianDate::dateTime(now()),
             'proformaUrl' => url()->current(),
             'amountInWords' => PersianHelper::numberToPersianWords($totalPrice),
         ]);
@@ -104,7 +104,7 @@ class OrderController extends Controller
         })->toArray();
 
         return view('invoice.show', [
-            'orderDate' => Jalalian::fromDateTime($order->created_at)->format('l، Y/m/d H:i'),
+            'orderDate' => PersianDate::dateTime($order->created_at),
             'trackingCode' => $order->tracking_code,
             'customer' => [
                 'full_name' => $order->customer->full_name,

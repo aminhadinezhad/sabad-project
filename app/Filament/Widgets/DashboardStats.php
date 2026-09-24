@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
+use App\Support\PersianDate;
 use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -39,13 +40,15 @@ class DashboardStats extends BaseWidget
 
     private function getMonthlyTrend(string $modelClass): array
     {
-        $months = collect(range(2, 0))->map(fn($i) => Carbon::now()->subMonths($i)->format('Y-m'));
+        // months by Tehran time: the stored UTC time is moved to Tehran before it is grouped
+        $months = collect(range(2, 0))->map(fn ($i) => Carbon::now(PersianDate::TIMEZONE)->subMonths($i)->format('Y-m'));
+        $offset = PersianDate::offsetMinutes();
 
         $counts = $modelClass::query()
-            ->selectRaw("strftime('%Y-%m', created_at) as month, count(*) as count")
+            ->selectRaw("strftime('%Y-%m', created_at, '{$offset} minutes') as month, count(*) as count")
             ->groupBy('month')
             ->pluck('count', 'month');
 
-        return $months->map(fn($month) => $counts[$month] ?? 0)->toArray();
+        return $months->map(fn ($month) => $counts[$month] ?? 0)->toArray();
     }
 }

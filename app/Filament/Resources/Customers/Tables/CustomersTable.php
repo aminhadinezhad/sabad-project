@@ -3,13 +3,12 @@
 namespace App\Filament\Resources\Customers\Tables;
 
 use App\Filament\Resources\Customers\CustomerResource;
-use Filament\Actions\EditAction;
+use App\Models\Customer;
+use App\Support\PersianDate;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use App\Models\Customer;
-use Morilog\Jalali\Jalalian;
-
 
 class CustomersTable
 {
@@ -28,7 +27,7 @@ class CustomersTable
                 TextColumn::make('created_at')
                     ->label('تاریخ')
                     ->searchable()
-                    ->formatStateUsing(fn($state) => Jalalian::fromDateTime($state)->format('%Y/%m/%d'))
+                    ->formatStateUsing(fn ($state) => PersianDate::date($state))
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
@@ -39,14 +38,14 @@ class CustomersTable
                     ->label('حذف')
                     ->requiresConfirmation()
                     ->modalHeading(
-                        fn(Customer $record): string => "حذف {$record->full_name}"
+                        fn (Customer $record): string => "حذف {$record->full_name}"
                     )
                     ->modalDescription('آیا برای انجام این کار مطمئن هستید؟')
                     ->modalSubmitActionLabel('حذف')
                     ->modalCancelActionLabel('لغو'),
             ])
             ->recordUrl(
-                fn($record) => CustomerResource::getUrl('edit', ['record' => $record]),
+                fn ($record) => CustomerResource::getUrl('edit', ['record' => $record]),
             );
     }
 }

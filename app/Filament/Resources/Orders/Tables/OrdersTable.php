@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Tables;
 
 use App\Models\Order;
+use App\Support\PersianDate;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -14,7 +15,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Morilog\Jalali\Jalalian;
 
 class OrdersTable
 {
@@ -43,7 +43,7 @@ class OrdersTable
 
                 TextColumn::make('created_at')
                     ->label('تاریخ')
-                    ->formatStateUsing(fn ($state) => Jalalian::fromDateTime($state)->format('%Y/%m/%d'))
+                    ->formatStateUsing(fn ($state) => PersianDate::date($state))
                     ->toggleable(),
 
                 IconColumn::make('is_finalized')
