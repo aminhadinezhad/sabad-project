@@ -98,7 +98,7 @@ class OrdersTable
                 Action::make('printInvoice')
                     ->label('چاپ پیش فاکتور سفارش')
                     ->icon('heroicon-o-printer')
-                    ->url(fn (Order $record) => route('orders.invoice', $record))
+                    ->url(fn (Order $record) => $record->invoiceUrl())
                     ->openUrlInNewTab(),
             ]);
     }

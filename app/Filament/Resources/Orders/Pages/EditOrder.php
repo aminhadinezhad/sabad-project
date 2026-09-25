@@ -17,7 +17,7 @@ class EditOrder extends EditRecord
             Action::make('printInvoice')
                 ->label('چاپ پیش‌فاکتور سفارش')
                 ->icon('heroicon-o-printer')
-                ->url(fn($record) => route('orders.invoice', $record))
+                ->url(fn($record) => $record->invoiceUrl())
                 ->openUrlInNewTab(),
 
             DeleteAction::make()

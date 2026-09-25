@@ -54,7 +54,7 @@ class OrderController extends Controller
         }
 
         // ۶. ریدایرکت به صفحه‌ی موفقیت
-        return redirect()->route('orders.success', ['trackingCode' => $order->tracking_code]);
+        return redirect()->to($order->successUrl());
     }
 
     public function preview(Request $request)
@@ -114,7 +114,7 @@ class OrderController extends Controller
             'items' => $items,
             'totalPrice' => $order->total_price,
             'amountInWords' => PersianHelper::numberToPersianWords($order->total_price),
-            'proformaUrl' => route('orders.invoice', $order),
+            'proformaUrl' => $order->invoiceUrl(),
         ]);
     }
 

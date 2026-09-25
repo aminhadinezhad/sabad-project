@@ -185,6 +185,10 @@
         cursor: pointer;
         width: 100%;
         font-family: inherit;
+        text-decoration: none;
+        text-align: center;
+        display: inline-block;
+        box-sizing: border-box;
     }
 
     .btn-continue {
@@ -226,35 +230,15 @@
         </div>
 
         <div class="success-actions">
-            <button type="button" class="btn-preview" onclick="previewInvoice()">مشاهده پیش‌فاکتور</button>
+            {{-- the saved order's own pre-invoice: its number, and the time it was placed --}}
+            <a href="{{ $order->invoiceUrl() }}" target="_blank" rel="noopener" class="btn-preview">مشاهده پیش فاکتور</a>
             <a href="{{ route('products.index') }}" class="btn-continue">بازگشت به فروشگاه</a>
         </div>
     </div>
 </div>
 
-<form id="preview-form" action="{{ route('orders.preview') }}" method="POST" style="display:none;">
-    @csrf
-    <input type="hidden" name="full_name" value="{{ $order->customer->full_name }}">
-    <input type="hidden" name="phone" value="{{ $order->customer->phone }}">
-    <input type="hidden" name="address" value="{{ $order->customer->address }}">
-
-    @foreach ($items as $index => $item)
-        <input type="hidden" name="items[{{ $index }}][product_name]" value="{{ $item->product_name }}">
-        <input type="hidden" name="items[{{ $index }}][product_code]" value="{{ $item->product_code }}">
-        <input type="hidden" name="items[{{ $index }}][quantity]" value="{{ $item->quantity }}">
-        <input type="hidden" name="items[{{ $index }}][unit_price]" value="{{ $item->unit_price }}">
-        <input type="hidden" name="items[{{ $index }}][vat_amount]" value="{{ $item->vat_amount }}">
-    @endforeach
-</form>
-
 <script>
     localStorage.removeItem('cart');
-
-    function previewInvoice() {
-        const form = document.getElementById('preview-form');
-        form.target = '_blank';
-        form.submit();
-    }
 </script>
 </body>
 </html>

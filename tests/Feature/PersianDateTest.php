@@ -48,7 +48,7 @@ class PersianDateTest extends TestCase
         $order->forceFill(['created_at' => Carbon::parse('2026-09-24 22:00:00', 'UTC')])->saveQuietly();
 
         // the invoice prints Persian digits
-        $this->get(route('orders.invoice', $order))
+        $this->get($order->invoiceUrl())
             ->assertOk()
             ->assertSee('۱۴۰۵/۰۷/۰۳ ۰۱:۳۰')
             ->assertDontSee('۱۴۰۵/۰۷/۰۲ ۲۲:۰۰');

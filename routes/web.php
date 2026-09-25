@@ -10,5 +10,7 @@ Route::get('/cart', function () {
 })->name('cart.index');
 Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 Route::post('/orders/preview', [OrderController::class, 'preview'])->name('orders.preview');
-Route::get('/orders/{trackingCode}/success', [OrderController::class, 'success'])->name('orders.success');
-Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
+// both show one customer's order, and order numbers run in sequence: only signed links open them
+// (see Order::successUrl and Order::invoiceUrl)
+Route::get('/orders/{trackingCode}/success', [OrderController::class, 'success'])->name('orders.success')->middleware('signed');
+Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice')->middleware('signed');
