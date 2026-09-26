@@ -15,6 +15,27 @@ class OrderForm
     {
         return $schema
             ->components([
+                // the customer's contact details, so the pre-invoice need not be opened to call them
+                Section::make('پروفایل خریدار')
+                    ->columns(2)
+                    ->collapsible()
+                    ->columnSpanFull()
+                    ->hiddenOn('create')
+                    ->components([
+                        Placeholder::make('customer_full_name')
+                            ->label('خریدار/مشتری')
+                            ->content(fn($record) => $record?->customer?->full_name ?: '-'),
+
+                        Placeholder::make('customer_phone')
+                            ->label('شماره موبایل')
+                            ->content(fn($record) => $record?->customer?->phone ?: '-'),
+
+                        Placeholder::make('customer_address')
+                            ->label('نشانی')
+                            ->columnSpanFull()
+                            ->content(fn($record) => $record?->customer?->address ?: '-'),
+                    ]),
+
                 Section::make('اقدام ادمین')
                     ->columns(2)
                     ->collapsible()
