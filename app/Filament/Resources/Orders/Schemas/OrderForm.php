@@ -15,10 +15,11 @@ class OrderForm
     {
         return $schema
             ->components([
-                // the customer's contact details, so the pre-invoice need not be opened to call them
+                // the customer's contact details, so the pre-invoice need not be opened to call them (closed until clicked, like the sections below)
                 Section::make('پروفایل خریدار')
                     ->columns(2)
                     ->collapsible()
+                    ->collapsed()
                     ->columnSpanFull()
                     ->hiddenOn('create')
                     ->components([
