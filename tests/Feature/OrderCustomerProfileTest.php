@@ -36,6 +36,9 @@ class OrderCustomerProfileTest extends TestCase
             ->assertSeeInOrder(['پروفایل خریدار', 'هادی الکترونیک مبین', '09120000017', 'تهران، میدان توحید', 'اقدام ادمین'])
             ->getContent();
 
+        // the name is shown once, in the profile; "other order details" no longer repeats it
+        $this->assertSame(1, substr_count($html, 'هادی الکترونیک مبین'));
+
         // no landline or profile photo
         $this->assertStringNotContainsString('شماره تماس', $html);
         $this->assertStringNotContainsString('عکس پروفایل', $html);
